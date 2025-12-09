@@ -108,9 +108,13 @@
 
   <script>
     function selectType(type) {
-      alert("You selected: " + type);
-      // Example redirect:
-      // window.location.href = type === "Creator" ? "creatorSignup.html" : "bookerSignup.html";
+      if (type === "Creator") {
+        // Redirect to Creator page
+        window.location.href = "CreatorAccount.html";
+      } else if (type === "Booker") {
+        // Redirect to Booker page
+        window.location.href = "bookeraccount.html";
+      }
     }
   </script>
 
