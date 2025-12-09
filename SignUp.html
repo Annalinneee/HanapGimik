@@ -3,122 +3,145 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Create Account UI</title>
-
+  <title>Create Account</title>
   <style>
-     body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: #c8e9ff;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-  }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
 
-  .container {
-    width: 70%;                /* mas gamay */
-    max-width: 900px;          /* reduce max width */
-    background: #ffffff;
-    border-radius: 20px;
-    padding: 25px;             /* mas nipis */
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 25px;                 /* mas duol */
-    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
-  }
+    body {
+      background: #c8e9ff;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 30px;
+    }
 
-  .image-box img {
-    width: 90%;                /* slightly smaller image */
-    border-radius: 18px;
-  }
+    .container {
+      width: 100%;
+      max-width: 950px;
+      background: #e8f4ff;
+      padding: 25px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 25px;
+      box-shadow: 0px 6px 18px rgba(0,0,0,0.10);
+    }
 
-  h2 {
-    margin: 0;
-    color: #1a57d8;
-    font-size: 24px;          /* smaller font */
-    font-weight: bold;
-  }
+    .image-box img {
+      width: 420px;
+      border-radius: 20px;
+    }
 
-  p {
-    margin-top: 5px;
-    margin-bottom: 15px;      /* smaller spacing */
-    font-size: 13px;
-  }
+    .form-card {
+      width: 45%;
+      background: #ffffff;
+      padding: 28px;
+      border-radius: 16px;
+      box-shadow: 0px 5px 15px rgba(0,0,0,0.06);
+    }
 
-  .form-group {
-    margin-bottom: 15px;
-  }
+    .title {
+      font-size: 28px;
+      font-weight: 700;
+      color: #1a57d8;
+    }
 
-  input[type="text"],
-  input[type="email"],
-  input[type="password"] {
-    width: 100%;
-    padding: 10px;            /* gamay */
-    border-radius: 8px;
-    border: 1px solid #cdd5df;
-    font-size: 14px;
-    background: #f7faff;
-  }
+    a {
+      color: #1a57d8;
+      text-decoration: none;
+      font-weight: 600;
+    }
 
-  button {
-    width: 100%;
-    padding: 12px;            /* gamay gamay */
-    background: #1a57d8;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    font-size: 15px;
-    margin-top: 10px;
-    cursor: pointer;
-  }
+    .label {
+      margin-top: 18px;
+      margin-bottom: 5px;
+      font-weight: 600;
+      font-size: 15px;
+    }
 
-  .remember {
-    margin-top: 10px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 13px;          /* smaller font */
-  }
+    input {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 8px;
+      border: 1px solid #d0dff5;
+      background: #f5f8ff;
+      font-size: 14px;
+    }
+
+    .login-btn {
+      width: 100%;
+      margin-top: 20px;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      background: #1a57d8;
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .remember-box input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    @media(max-width: 900px) {
+      .container {
+        flex-direction: column;
+        text-align: center;
+      }
+      .form-card {
+        width: 100%;
+      }
+    }
   </style>
 </head>
-
 <body>
 
   <div class="container">
 
-    <!-- LEFT SIDE IMAGE -->
+    <!-- IMAGE LEFT -->
     <div class="image-box">
-      <img src="images/a.png" 
-      alt="3D Illustration">
+      <img src="images/a.png" alt="Sign Up Illustration">
     </div>
 
-    <!-- RIGHT SIDE FORM -->
-    <div class="form-box">
-      <h2>Create Account</h2>
-      <p>Already a member? <a href="LoginPage.html">Sign in.</a></p>
+    <!-- FORM RIGHT -->
+    <div class="form-card">
+      <div class="title">Create Account</div>
+      <p style="margin-bottom: 10px;">Already a member? <a href="LoginPage.html">Sign in.</a></p>
 
-      <div class="form-group">
-        <input type="text" placeholder="Fullname" />
-      </div>
+      <!-- FIXED FORM WITH REDIRECT -->
+      <form action="Account.html" method="GET">
 
-      <div class="form-group">
-        <input type="email" placeholder="Email" />
-      </div>
+        <div class="label">Fullname</div>
+        <input type="text" placeholder="Enter your fullname" required />
 
-      <div class="form-group">
-        <input type="password" placeholder="Password" />
-      </div>
+        <div class="label">Email</div>
+        <input type="email" placeholder="Enter your email" required />
 
-      <div class="form-group">
-        <input type="password" placeholder="Confirm Password" />
-      </div>
+        <div class="label">Password</div>
+        <input type="password" placeholder="Enter password" required />
 
-      <button>Login</button>
+        <div class="label">Confirm Password</div>
+        <input type="password" placeholder="Confirm password" required />
 
-      <label class="remember">
-        <input type="checkbox"> Remember me.
-      </label>
+        <button class="login-btn" type="submit">Create Account</button>
+
+        <div class="remember-box" style="margin-top: 10px;">
+          <input type="checkbox" id="rememberMe" />
+          <label for="rememberMe">Remember me.</label>
+        </div>
+
+      </form>
     </div>
 
   </div>

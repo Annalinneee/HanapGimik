@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Account Type</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+
+    body {
+      background: #cfeaff;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .outer-box {
+      background: #beddff;
+      width: 85%;
+      max-width: 1100px;
+      padding: 60px;
+      border-radius: 25px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .inner-box {
+      background: #ffffff;
+      width: 85%;
+      padding: 50px;
+      border-radius: 25px;
+      text-align: center;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      font-size: 28px;
+      font-weight: 700;
+      color: #1a57d8;
+      margin-bottom: 35px;
+      text-align: left;
+    }
+
+    .cards {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+
+    .card {
+      background: #d9eaff;
+      width: 230px;
+      padding: 25px;
+      border-radius: 18px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: 0.25s;
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 8px 18px rgba(0,0,0,0.15);
+    }
+
+    .card img {
+      width: 120px;
+      margin-bottom: 15px;
+    }
+
+    .label {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1a57d8;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="outer-box">
+    <div class="inner-box">
+      <h2>Account Type:</h2>
+
+      <div class="cards">
+
+        <!-- CREATOR CARD -->
+        <div class="card" onclick="selectType('Creator')">
+          <img src="images/g.png" alt="Creator" />
+          <div class="label">Creator</div>
+        </div>
+
+        <!-- BOOKER CARD -->
+        <div class="card" onclick="selectType('Booker')">
+          <img src="images/f.png" alt="Booker" />
+          <div class="label">Booker</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function selectType(type) {
+      alert("You selected: " + type);
+      // Example redirect:
+      // window.location.href = type === "Creator" ? "creatorSignup.html" : "bookerSignup.html";
+    }
+  </script>
+
+</body>
+</html>

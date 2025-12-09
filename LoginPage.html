@@ -71,7 +71,6 @@
             background: #f5f8ff;
         }
 
-        /* ✅ REMEMBER ME (FIXED & CLEAN) */
         .remember-box {
             display: flex;
             align-items: center;
@@ -154,7 +153,7 @@
         }
 
         .illustration {
-            width: 400px;
+            width: 520px;
             height: auto;
         }
 
@@ -179,23 +178,23 @@
         <div class="login-title">Login</div>
         <p style="margin-bottom: 10px;">
             Doesn't have an account yet?
-            <a href="#">Create an Account.</a>
+            <a href="SignUp.html">Create an Account.</a>
         </p>
 
-        <form>
+        <!-- UPDATED FORM -->
+        <form action="Account.html" method="GET">
             <div class="label">Enter your E-mail</div>
             <input type="email" required />
 
             <div class="label">Enter your password</div>
             <input type="password" required />
 
-            <!-- REMEMBER ME (UPDATED) -->
             <div class="remember-box">
                 <input type="checkbox" id="rememberMe" />
                 <label for="rememberMe">Remember me.</label>
             </div>
 
-            <button class="login-btn">Login</button>
+            <button type="submit" class="login-btn">Login</button>
             <a class="forgot" href="#">Forgot Password.</a>
 
             <div class="divider">or</div>
@@ -214,9 +213,7 @@
     </div>
 
     <!-- RIGHT ILLUSTRATION -->
-    <img class="illustration" 
-         src="images/h.png"
-         alt="Illustration">
+    <img class="illustration" src="images/h.png" alt="Illustration">
 
 </div>
 
