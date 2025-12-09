@@ -7,88 +7,105 @@
 
     <style>
         * {
-            margin: 0; padding: 0;
+            margin: 0;
+            padding: 0;
             box-sizing: border-box;
             font-family: "Poppins", sans-serif;
         }
 
         body {
-            background: linear-gradient(180deg, #dff3ff, #cfeaff);
+            background: #dff3ff;
             min-height: 100vh;
             display: flex;
-            align-items: center;
             justify-content: center;
+            align-items: center;
             padding: 20px;
         }
 
-        .login-wrapper {
-            background: #f7fbff;
+        .container {
             width: 100%;
-            max-width: 1100px;
-            display: flex;
-            border-radius: 18px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            max-width: 1200px;
+            background: #e8f4ff;
             padding: 40px;
-            gap: 30px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0px 8px 25px rgba(0,0,0,0.08);
+            gap: 40px;
         }
 
-        .login-box {
-            flex: 1;
+        .login-card {
+            width: 45%;
+            background: #ffffff;
+            padding: 35px;
+            border-radius: 16px;
+            box-shadow: 0px 5px 15px rgba(0,0,0,0.05);
         }
 
         .login-title {
             font-size: 28px;
             font-weight: 700;
             color: #1b64d8;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
         }
 
-        .subtitle a {
+        .login-card a {
             color: #1b64d8;
-            font-weight: 600;
             text-decoration: none;
+            font-weight: 600;
         }
 
-        .input-label {
+        .label {
             margin-top: 18px;
+            margin-bottom: 5px;
             font-weight: 600;
-            color: #333;
+            font-size: 15px;
         }
 
         input {
             width: 100%;
             padding: 12px 14px;
-            margin-top: 8px;
             border-radius: 8px;
-            border: 1px solid #d9e6f8;
+            border: 1px solid #d0dff5;
+            background: #f5f8ff;
         }
 
-        .remember {
+        /* ✅ REMEMBER ME (FIXED & CLEAN) */
+        .remember-box {
             display: flex;
             align-items: center;
-            margin-top: 10px;
             gap: 8px;
+            margin-top: 12px;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .remember-box input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
         }
 
         .login-btn {
-            margin-top: 20px;
-            background: #1b64d8;
-            color: #fff;
             width: 100%;
+            margin-top: 20px;
             padding: 12px;
             border: none;
             border-radius: 8px;
-            cursor: pointer;
+            background: #1b64d8;
+            color: white;
             font-size: 16px;
             font-weight: 600;
+            cursor: pointer;
         }
 
         .forgot {
             float: right;
-            margin-top: 10px;
+            margin-top: 8px;
+            font-size: 14px;
             color: #1b64d8;
             text-decoration: none;
-            font-size: 14px;
         }
 
         .divider {
@@ -96,13 +113,15 @@
             text-align: center;
             color: #777;
             position: relative;
+            font-weight: 500;
         }
 
-        .divider::before, .divider::after {
+        .divider::before,
+        .divider::after {
             content: "";
             height: 1px;
             width: 40%;
-            background: #d0d0d0;
+            background: #c6c6c6;
             position: absolute;
             top: 50%;
         }
@@ -118,85 +137,88 @@
         .social-buttons {
             display: flex;
             justify-content: center;
-            gap: 20px;
+            gap: 15px;
         }
 
         .social-btn {
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 8px 20px;
-            border-radius: 50px;
-            border: 1px solid #b7c8e6;
-            background: #fff;
+            gap: 6px;
+            padding: 8px 18px;
+            border-radius: 30px;
+            border: 1px solid #bcd3f4;
+            background: white;
             cursor: pointer;
             font-weight: 600;
-        }
-
-        .image-box {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            font-size: 15px;
         }
 
         .illustration {
-            width: 80%;
-            max-width: 350px;
+            width: 400px;
+            height: auto;
         }
 
-        /* Responsive */
-        @media(max-width: 900px) {
-            .login-wrapper {
+        @media (max-width: 900px) {
+            .container {
                 flex-direction: column;
                 text-align: center;
             }
+            .login-card {
+                width: 100%;
+            }
         }
     </style>
-
 </head>
 
 <body>
 
-<div class="login-wrapper">
-
-    <!-- LEFT SIDE -->
-    <div class="login-box">
+<div class="container">
+    
+    <!-- LOGIN CARD -->
+    <div class="login-card">
         <div class="login-title">Login</div>
-        <div class="subtitle">
-            Doesn’t have an account yet? <a href="signup.html">Create an Account</a>
-        </div>
+        <p style="margin-bottom: 10px;">
+            Doesn't have an account yet?
+            <a href="#">Create an Account.</a>
+        </p>
 
-        <form action="/login" method="POST">
-            <div class="input-label">Enter your E-mail</div>
-            <input type="email" name="email" required />
+        <form>
+            <div class="label">Enter your E-mail</div>
+            <input type="email" required />
 
-            <div class="input-label">Enter your password</div>
-            <input type="password" name="password" required />
+            <div class="label">Enter your password</div>
+            <input type="password" required />
 
-            <div class="remember">
-                <input type="checkbox" />
-                <span>Remember me.</span>
+            <!-- REMEMBER ME (UPDATED) -->
+            <div class="remember-box">
+                <input type="checkbox" id="rememberMe" />
+                <label for="rememberMe">Remember me.</label>
             </div>
 
-            <button type="submit" class="login-btn">Login</button>
-
-            <a href="/forgot" class="forgot">Forgot Password.</a>
+            <button class="login-btn">Login</button>
+            <a class="forgot" href="#">Forgot Password.</a>
 
             <div class="divider">or</div>
 
             <div class="social-buttons">
                 <div class="social-btn">
-                    <img src="https://cdn-icons-png.flaticon.com/512/300/300221.png" width="20" />
+                    <img src="https://cdn-icons-png.flaticon.com/512/300/300221.png" width="18" />
                     Google
                 </div>
                 <div class="social-btn">
-                    <img src="https://cdn-icons-png.flaticon.com/512/145/145802.png" width="20" />
+                    <img src="https://cdn-icons-png.flaticon.com/512/145/145802.png" width="18" />
                     Facebook
                 </div>
             </div>
         </form>
- 
+    </div>
+
+    <!-- RIGHT ILLUSTRATION -->
+    <img class="illustration" 
+         src="images/h.png"
+         alt="Illustration">
+
+</div>
 
 </body>
 </html>
