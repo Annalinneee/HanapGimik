@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HanapGimik</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
+        }
+
+        body {
+            background: linear-gradient(180deg, #dff3ff, #cfeaff);
+        }
+
+        /* NAVBAR */
+        .navbar {
+            width: 100%;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: 700;
+            color: #1b64d8;
+        }
+
+        .nav-links a {
+            margin-left: 20px;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 600;
+            color: #1b1b1b;
+        }
+
+        .signup-btn {
+            background: #1b64d8;
+            color: white !important;
+            padding: 8px 18px;
+            border-radius: 6px;
+        }
+
+        /* HERO SECTION */
+        .hero {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 90vh;
+            padding: 40px 80px;
+            gap: 40px;
+        }
+
+        .hero-text {
+            max-width: 600px;
+        }
+
+        .hero-text h1 {
+            font-size: 70px;
+            font-weight: 800;
+            color: #1b64d8;
+        }
+
+        .hero-text p {
+            font-size: 20px;
+            color: #6986bf;
+            margin: 20px 0 30px;
+        }
+
+        .get-started-btn {
+            background: #1b64d8;
+            color: white;
+            padding: 12px 26px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .hero-img {
+            width: 450px;
+            max-width: 100%;
+        }
+
+        /* ---------------------------- */
+        /* RESPONSIVE DESIGN (MEDIA QUERIES) */
+        /* ---------------------------- */
+
+        /* Tablets and medium screens */
+        @media (max-width: 992px) {
+            .hero {
+                flex-direction: column;
+                text-align: center;
+                padding: 40px;
+            }
+
+            .hero-text h1 {
+                font-size: 55px;
+            }
+
+            .hero-text p {
+                font-size: 18px;
+            }
+
+            .hero-img {
+                width: 350px;
+            }
+        }
+
+        /* Mobile phones */
+        @media (max-width: 600px) {
+
+            .navbar {
+                padding: 20px;
+            }
+
+            .logo {
+                font-size: 22px;
+            }
+
+            .nav-links a {
+                margin-left: 15px;
+                font-size: 14px;
+            }
+
+            .signup-btn {
+                padding: 6px 14px;
+                font-size: 14px;
+            }
+
+            .hero {
+                flex-direction: column;
+                padding: 30px 20px;
+                text-align: center;
+            }
+
+            .hero-text h1 {
+                font-size: 38px;
+            }
+
+            .hero-text p {
+                font-size: 16px;
+            }
+
+            .get-started-btn {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+
+            .hero-img {
+                width: 260px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <div class="navbar">
+        <div class="logo">HanapGimik</div>
+
+        <div class="nav-links">
+            <a href="#">Login</a>
+            <a href="#" class="signup-btn">Sign Up</a>
+        </div>
+    </div>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-text">
+            <h1>HanapGimik</h1>
+            <p>Finding business events near you.</p>
+            <a href="#" class="get-started-btn">Get Started</a>
+        </div>
+
+        <!-- Replace with your own image file if needed -->
+        <img src="https://i.ibb.co/L1QMJgr/3d-calendar.png" class="hero-img" />
+    </section>
+
+</body>
+</html>
