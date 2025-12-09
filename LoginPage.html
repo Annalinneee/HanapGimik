@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login • HanapGimik</title>
+
+    <style>
+        * {
+            margin: 0; padding: 0;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
+        }
+
+        body {
+            background: linear-gradient(180deg, #dff3ff, #cfeaff);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-wrapper {
+            background: #f7fbff;
+            width: 100%;
+            max-width: 1100px;
+            display: flex;
+            border-radius: 18px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            padding: 40px;
+            gap: 30px;
+        }
+
+        .login-box {
+            flex: 1;
+        }
+
+        .login-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1b64d8;
+            margin-bottom: 10px;
+        }
+
+        .subtitle a {
+            color: #1b64d8;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .input-label {
+            margin-top: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 14px;
+            margin-top: 8px;
+            border-radius: 8px;
+            border: 1px solid #d9e6f8;
+        }
+
+        .remember {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+            gap: 8px;
+        }
+
+        .login-btn {
+            margin-top: 20px;
+            background: #1b64d8;
+            color: #fff;
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .forgot {
+            float: right;
+            margin-top: 10px;
+            color: #1b64d8;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .divider {
+            margin: 25px 0;
+            text-align: center;
+            color: #777;
+            position: relative;
+        }
+
+        .divider::before, .divider::after {
+            content: "";
+            height: 1px;
+            width: 40%;
+            background: #d0d0d0;
+            position: absolute;
+            top: 50%;
+        }
+
+        .divider::before {
+            left: 0;
+        }
+
+        .divider::after {
+            right: 0;
+        }
+
+        .social-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .social-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 20px;
+            border-radius: 50px;
+            border: 1px solid #b7c8e6;
+            background: #fff;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .image-box {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .illustration {
+            width: 80%;
+            max-width: 350px;
+        }
+
+        /* Responsive */
+        @media(max-width: 900px) {
+            .login-wrapper {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+
+<div class="login-wrapper">
+
+    <!-- LEFT SIDE -->
+    <div class="login-box">
+        <div class="login-title">Login</div>
+        <div class="subtitle">
+            Doesn’t have an account yet? <a href="signup.html">Create an Account</a>
+        </div>
+
+        <form action="/login" method="POST">
+            <div class="input-label">Enter your E-mail</div>
+            <input type="email" name="email" required />
+
+            <div class="input-label">Enter your password</div>
+            <input type="password" name="password" required />
+
+            <div class="remember">
+                <input type="checkbox" />
+                <span>Remember me.</span>
+            </div>
+
+            <button type="submit" class="login-btn">Login</button>
+
+            <a href="/forgot" class="forgot">Forgot Password.</a>
+
+            <div class="divider">or</div>
+
+            <div class="social-buttons">
+                <div class="social-btn">
+                    <img src="https://cdn-icons-png.flaticon.com/512/300/300221.png" width="20" />
+                    Google
+                </div>
+                <div class="social-btn">
+                    <img src="https://cdn-icons-png.flaticon.com/512/145/145802.png" width="20" />
+                    Facebook
+                </div>
+            </div>
+        </form>
+ 
+
+</body>
+</html>
