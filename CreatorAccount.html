@@ -3,357 +3,659 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Profile — Demo</title>
+<title>Creator</title>
 <style>
-  /* ---------- Reset & base ---------- */
+  /* ----------------- Base ----------------- */
   :root{
-    --bg:#f0f2f5;
+    --bg:#f5f8fa;
     --card:#fff;
-    --muted:#606770;
-    --accent:#1877f2;
-    --shadow: 0 6px 18px rgba(0,0,0,0.08);
-    font-family: "Segoe UI", Roboto, system-ui, -apple-system, "Helvetica Neue", Arial;
-  }
-  *{box-sizing:border-box}
-  html,body{height:100%}
-  body{
-    margin:0;
-    background:var(--bg);
-    color:#050505;
+    --text:#0f1419;
+    --muted:#536471;
+    --accent:#1d9bf0;
+    --danger:#e0245e;
+    --border:#e6ecf0;
+    font-family: Inter, "Segoe UI", Roboto, system-ui, -apple-system, "Helvetica Neue", Arial;
     -webkit-font-smoothing:antialiased;
     -moz-osx-font-smoothing:grayscale;
   }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);line-height:1.35}
+  .container{max-width:950px;margin:18px auto;padding:0 12px}
 
-  /* ---------- Top nav ---------- */
-  .topbar{
-    position:sticky; top:0; z-index:30;
-    background:linear-gradient(90deg,#ffffffcc,#ffffffcc);
-    backdrop-filter: blur(4px);
-    border-bottom:1px solid #e6e6e6;
-    display:flex; align-items:center; gap:16px;
-    padding:10px 18px;
+  /* ------------- Header ------------- */
+  .nav{
+    background:var(--card);border-bottom:1px solid var(--border);
+    padding:10px 14px;position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:12px;
   }
-  .brand{
-    display:flex; align-items:center; gap:10px; font-weight:700;
-  }
-  .brand .logo{
-    width:36px; height:36px; border-radius:8px;
-    background:linear-gradient(135deg,#2b6df6,#1877f2);
-    display:grid; place-items:center; color:white; font-weight:800;
-    box-shadow:var(--shadow);
-  }
-  .search{
-    flex:1; max-width:560px; display:flex; align-items:center;
-    background:#f0f2f5; padding:8px 12px; border-radius:20px;
-  }
-  .search input{border:0; outline:none; background:transparent; width:100%}
-  .top-actions{display:flex; gap:8px; align-items:center}
+  .nav .brand{font-weight:800;font-size:18px;color:var(--text)}
+  .nav .search{margin-left:auto;background:#eef3ff;padding:8px;border-radius:999px;font-size:14px;color:var(--muted)}
 
-  /* ---------- Cover & profile ---------- */
-  .container{max-width:1100px; margin:20px auto; padding:0 16px}
-  .profile-header{
-    background:transparent; border-radius:10px; overflow:visible; position:relative;
+  /* ---------- Profile header (banner + avatar) ---------- */
+  .profile-header{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:0 6px 16px rgba(11,15,22,0.04)}
+  .banner{
+    height:200px;background:#dfe9ff;background-size:cover;background-position:center;position:relative;
   }
-  .cover{
-    height:220px; border-radius:10px; background-image:
-      linear-gradient(90deg, rgba(24,119,242,0.9), rgba(39,121,184,0.9)),
-      url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900"><rect width="100%" height="100%" fill="%23dbe9ff"/></svg>');
-    background-size:cover; background-position:center;
-    box-shadow:var(--shadow);
-    position:relative;
+  .banner .edit-banner{
+    position:absolute;right:12px;bottom:12px;background:#0008;color:white;border:none;padding:6px 10px;border-radius:8px;cursor:pointer;font-size:13px;
   }
-  .profile-row{
-    display:flex; gap:18px; align-items:flex-end;
-    position:relative; margin-top:-56px; padding:0 12px;
-  }
+  .profile-row{display:flex;gap:16px;padding:12px 16px;align-items:flex-end}
   .avatar{
-    width:128px; height:128px; border-radius:50%;
-    border:6px solid white; background:#ddd; flex-shrink:0;
-    display:grid; place-items:center; font-size:48px; color:#666;
-    box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+    width:120px;height:120px;border-radius:50%;border:4px solid var(--card);background:#ddd;background-size:cover;background-position:center;flex-shrink:0;position:relative;
+    display:grid;place-items:center;font-weight:700;color:#444;font-size:28px;
   }
-  .profile-meta{flex:1; display:flex; justify-content:space-between; align-items:flex-end;}
-  .meta-left{padding:8px 6px}
-  .meta-left h1{margin:0; font-size:20px}
-  .meta-left p{margin:6px 0 0; color:var(--muted); font-size:14px}
-  .action-buttons{display:flex; gap:8px; margin-bottom:8px}
-  .btn{
-    background:var(--card); border:1px solid #d0d0d0; padding:8px 12px; border-radius:6px;
-    cursor:pointer; font-weight:600;
-  }
-  .btn.primary{background:var(--accent); color:white; border:1px solid rgba(0,0,0,0.08)}
-  .btn.ghost{background:transparent}
+  .avatar .edit-av{position:absolute;right:6px;bottom:6px;background:#0008;color:white;border:none;padding:6px;border-radius:6px;cursor:pointer;font-size:12px}
 
-  /* ---------- Tabs ---------- */
-  .tabs{display:flex; gap:12px; margin-top:14px; border-top:1px solid #e9eef7; padding-top:10px}
-  .tab{padding:8px 12px; border-radius:8px; cursor:pointer; color:var(--muted)}
-  .tab.active{color:var(--accent); border-bottom:3px solid var(--accent); font-weight:700}
+  .profile-meta{flex:1}
+  .profile-meta h1{margin:0;font-size:20px}
+  .profile-meta h1[contenteditable]{padding:4px;border-radius:6px}
+  .profile-meta p{margin:6px 0;color:var(--muted)}
+  .profile-meta p[contenteditable]{padding:4px;border-radius:6px}
 
-  /* ---------- Layout ---------- */
-  .layout{display:grid; grid-template-columns: 320px 1fr; gap:18px; margin-top:16px;}
-  @media (max-width:900px){
-    .layout{grid-template-columns:1fr; padding-bottom:50px}
-    .avatar{width:96px;height:96px;margin-left:8px;border-width:4px}
-    .profile-row{margin-top:-48px}
-  }
+  .profile-actions{display:flex;gap:8px;margin-left:auto}
+  .btn{background:var(--card);border:1px solid var(--border);padding:8px 12px;border-radius:8px;cursor:pointer;font-weight:600}
+  .btn.primary{background:var(--accent);color:white;border:none}
 
-  /* ---------- Left column (about + friends) ---------- */
-  .card{background:var(--card); border-radius:10px; padding:14px; box-shadow:var(--shadow)}
-  .section-title{font-weight:700; font-size:14px; margin-bottom:8px}
-  .about p{color:var(--muted); margin:6px 0 0; font-size:14px}
-  .friends-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:8px}
-  .friend{
-    display:flex; flex-direction:column; gap:8px; align-items:center; text-align:center;
-  }
-  .friend .fpic{width:86px;height:86px;border-radius:8px;background:#eee; display:grid; place-items:center; color:#888; font-weight:700}
+  /* ---------- Layout: left profile column + feed ---------- */
+  .layout{display:grid;grid-template-columns:300px 1fr;gap:14px;margin-top:14px}
+  @media (max-width:920px){.layout{grid-template-columns:1fr}}
 
-  /* ---------- Right column (create post + posts) ---------- */
-  .create-post{display:flex; gap:12px; align-items:flex-start}
-  .create-post textarea{flex:1; resize:none; border:1px solid #ececec; border-radius:10px; padding:10px; min-height:70px}
-  .post{margin-top:12px}
-  .post .post-head{display:flex; gap:10px; align-items:center}
-  .post .p-avatar{width:44px;height:44px;border-radius:50%;background:#ddd; display:grid;place-items:center}
-  .post .post-body{background:var(--card); padding:12px; border-radius:10px; box-shadow:var(--shadow)}
-  .post .meta{color:var(--muted); font-size:13px}
-  .post .media{margin-top:10px; border-radius:8px; overflow:hidden; background:#fafafa; min-height:140px; display:grid; place-items:center}
+  /* left column */
+  .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px}
+  .card h3{margin:0 0 8px 0}
+  .info-row{display:flex;gap:10px;align-items:center;margin:8px 0;color:var(--muted);font-size:14px}
 
-  .post-actions{display:flex; gap:8px; margin-top:8px}
-  .pill{background:#f0f2f5; padding:8px 10px; border-radius:999px; font-weight:600; cursor:pointer}
+  /* compose box */
+  .compose.card{display:flex;gap:12px;align-items:flex-start;flex-direction:column}
+  .compose .top{display:flex;gap:12px;width:100%}
+  .compose textarea{flex:1;min-height:84px;border:1px solid var(--border);border-radius:10px;padding:10px;font-size:15px;resize:none}
+  .compose .controls{display:flex;justify-content:space-between;align-items:center;width:100%}
+  .icon-btn{background:transparent;border:none;cursor:pointer;font-size:14px;color:var(--muted);padding:6px;border-radius:8px}
+  .post-btn{padding:8px 12px;border-radius:999px;background:var(--accent);color:white;border:none;cursor:pointer;font-weight:700}
 
-  /* small helpers */
-  .muted{color:var(--muted)} .small{font-size:13px}
-  .center{display:grid; place-items:center}
+  .image-preview{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+  .image-preview img{width:120px;height:80px;object-fit:cover;border-radius:8px;border:1px solid var(--border)}
+
+  /* feed */
+  .feed .post{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:12px;box-shadow:0 6px 12px rgba(11,15,22,0.03)}
+  .post .head{display:flex;gap:10px}
+  .post .head .p-avatar{width:46px;height:46px;border-radius:50%;background:#ccc;background-size:cover;background-position:center;flex-shrink:0}
+  .post .meta{flex:1}
+  .post .meta .who{font-weight:700}
+  .post .meta .when{color:var(--muted);font-size:13px}
+  .post .text{margin-top:8px;white-space:pre-wrap}
+  .post .media{margin-top:10px;display:grid;gap:6px}
+  .post .media.grid-2{grid-template-columns:1fr 1fr}
+  .post .media.grid-3{grid-template-columns:1fr 1fr;grid-auto-rows:120px}
+  .post .media img{width:100%;height:100%;object-fit:cover;border-radius:8px}
+
+  .post .actions{display:flex;gap:6px;margin-top:10px}
+  .action{display:flex;gap:8px;align-items:center;padding:8px;border-radius:8px;color:var(--muted);cursor:pointer}
+  .action.like.active{color:var(--danger)}
+  .action.retweet.active{color:green}
+
+  .small{font-size:13px;color:var(--muted)}
+
+  /* modal */
+  .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.35);display:grid;place-items:center;z-index:200}
+  .modal{background:white;border-radius:12px;padding:14px;max-width:720px;width:95%;box-shadow:0 12px 40px rgba(11,15,22,0.35)}
+
+  /* utilities */
+  .right{margin-left:auto}
+  .muted{color:var(--muted)}
+  .danger{color:var(--danger)}
 </style>
 </head>
 <body>
-  <header class="topbar">
-    <div class="brand">
-      <div class="logo">f</div>
-      <div class="small muted">SocialDemo</div>
+
+<!-- NAV -->
+<div class="nav">
+  <div class="brand">HanapGimik</div>
+  <div class="search">Search</div>
+</div>
+
+<div class="container">
+
+  <!-- PROFILE HEADER -->
+  <div class="profile-header" id="profileHeader">
+    <div class="banner" id="banner">
+      <button class="edit-banner" id="editBannerBtn">Edit banner</button>
     </div>
 
-    <div class="search" role="search">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="opacity:.7"><path d="M21 21l-4.35-4.35" stroke="#000" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path><circle cx="11" cy="11" r="6" stroke="#000" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></circle></svg>
-      <input placeholder="Search SocialDemo" aria-label="Search" />
-    </div>
-
-    <div class="top-actions">
-      <button class="btn">Home</button>
-      <button class="btn">Profile</button>
-      <div class="btn">Me ▾</div>
-    </div>
-  </header>
-
-  <main class="container">
-    <section class="profile-header">
-      <div class="cover" id="cover"></div>
-
-      <div class="profile-row">
-        <div class="avatar" id="avatar" title="Profile photo">JD</div>
-
-        <div class="profile-meta">
-          <div class="meta-left">
-            <h1 id="name">Juan Dela Cruz</h1>
-            <p id="headline">Software dev • Manila, Philippines</p>
-
-            <div class="tabs" id="tabs">
-              <div class="tab active" data-tab="posts">Posts</div>
-              <div class="tab" data-tab="about">About</div>
-              <div class="tab" data-tab="friends">Friends</div>
-              <div class="tab" data-tab="photos">Photos</div>
-            </div>
-          </div>
-
-          <div class="meta-right">
-            <div class="action-buttons">
-              <button class="btn primary" id="addFriend">Add Friend</button>
-              <button class="btn">Message</button>
-              <button class="btn ghost">•••</button>
-            </div>
-            <div class="small muted" style="text-align:right">Joined: Jan 2018</div>
-          </div>
-        </div>
+    <div class="profile-row">
+      <div class="avatar" id="profileAvatar">
+        <div id="avatarInitials">JD</div>
+        <button class="edit-av" id="editAvatarBtn">Edit</button>
       </div>
-    </section>
 
-    <div class="layout">
-      <!-- left -->
-      <aside>
-        <div class="card about" id="aboutCard">
-          <div class="section-title">About</div>
-          <p id="aboutText">Hey — I'm Juan, a developer who likes clean UI and good coffee. I build apps & love learning new tech.</p>
-        </div>
+      <div class="profile-meta">
+        <h1 id="profName" contenteditable="true">Juan Dela Cruz</h1>
+        <p id="profHandle" contenteditable="true" class="muted">@juandelacruz</p>
+        <p id="profBio" contenteditable="true" class="muted">Developer • coffee enthusiast • building for the web</p>
+      </div>
 
-        <div class="card" style="margin-top:12px">
-          <div class="section-title">Friends</div>
-          <div class="friends-grid" id="friendsGrid">
-            <div class="friend"><div class="fpic">AL</div><div class="small muted">Alice</div></div>
-            <div class="friend"><div class="fpic">BN</div><div class="small muted">Ben</div></div>
-            <div class="friend"><div class="fpic">CE</div><div class="small muted">Cee</div></div>
-            <div class="friend"><div class="fpic">DM</div><div class="small muted">Dani</div></div>
-            <div class="friend"><div class="fpic">EK</div><div class="small muted">Eko</div></div>
-            <div class="friend"><div class="fpic">FM</div><div class="small muted">Faye</div></div>
-          </div>
-        </div>
-      </aside>
+      <div class="profile-actions">
+        <button class="btn">Follow</button>
+        <button class="btn">Message</button>
+      </div>
+    </div>
+  </div>
 
-      <!-- right -->
-      <section>
-        <div class="card">
-          <div class="create-post">
-            <div class="p-avatar">JD</div>
-            <div style="flex:1">
-              <textarea id="postText" placeholder="What's on your mind, Juan?"></textarea>
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px">
-                <div class="small muted">Public ▾</div>
-                <div><button class="btn primary" id="postBtn">Post</button></div>
+  <!-- LAYOUT -->
+  <div class="layout">
+
+    <!-- LEFT COLUMN -->
+    <aside>
+      <div class="card">
+        <h3>Profile</h3>
+        <div class="info-row"><strong id="displayName">Juan Dela Cruz</strong><span class="muted">•</span><span id="displayHandle" class="muted">@juandelacruz</span></div>
+        <div class="info-row muted" id="displayBio">Developer • coffee enthusiast • building for the web</div>
+        <hr style="border:none;border-top:1px solid var(--border);margin:10px 0">
+        <div class="info-row"><strong class="muted">Location</strong><div class="muted">Manila, Philippines</div></div>
+        <div class="info-row"><strong class="muted">Website</strong><div class="muted">example.com</div></div>
+      </div>
+
+      <div class="card" style="margin-top:12px">
+        <h3>Stats</h3>
+        <div class="info-row"><div><strong id="statFollowing">120</strong><div class="small muted">Following</div></div><div style="margin-left:16px"><strong id="statFollowers">980</strong><div class="small muted">Followers</div></div></div>
+      </div>
+    </aside>
+
+    <!-- RIGHT: FEED -->
+    <main>
+      <!-- COMPOSE -->
+      <div class="compose card" id="composeCard">
+        <div style="display:flex;gap:12px;width:100%">
+          <div style="width:46px;height:46px;border-radius:50%;background:#ccc;background-size:cover;background-position:center" id="composeAvatar"></div>
+          <div style="flex:1">
+            <textarea id="composeText" placeholder="What's happening?" maxlength="1000"></textarea>
+            <div class="image-preview" id="composePreview"></div>
+            <div class="controls" style="margin-top:8px">
+              <div>
+                <button class="icon-btn" id="addImageBtn">🖼️ Add images</button>
+                <input type="file" id="composeImageInput" accept="image/*" multiple style="display:none">
+              </div>
+              <div>
+                <button class="post-btn" id="postCreateBtn">Post</button>
               </div>
             </div>
           </div>
         </div>
+      </div>
 
-        <div id="feed">
-          <!-- posts will be inserted here -->
-        </div>
-      </section>
-    </div>
-  </main>
+      <!-- FEED -->
+      <div class="feed" id="feed"></div>
+    </main>
+
+  </div>
+</div>
+
+<!-- Hidden inputs -->
+<input type="file" id="avatarInput" accept="image/*" style="display:none">
+<input type="file" id="bannerInput" accept="image/*" style="display:none">
+
+<!-- Modals (edit post and comments) -->
+<div id="modalRoot" style="display:none"></div>
 
 <script>
-/* ---------- Sample data ---------- */
-const samplePosts = [
-  {
-    id:1,
-    author:"Juan Dela Cruz",
-    time:"2 hrs",
-    text:"Excited to share my new small project: a clean profile demo. Feedback welcome!",
-    likes:12,
-    comments:3
-  },
-  {
-    id:2,
-    author:"Juan Dela Cruz",
-    time:"1 day",
-    text:"Coffee + coding = ❤️",
-    likes:42,
-    comments:8
-  }
-];
+/* -------------------- Utilities -------------------- */
+const qs = s => document.querySelector(s);
+const qsa = s => Array.from(document.querySelectorAll(s));
+const uid = ()=> 'id_' + Math.random().toString(36).slice(2,9);
 
-/* ---------- Utils & rendering ---------- */
-function el(tag, attrs={}, children=''){
-  const e=document.createElement(tag);
-  for(const k in attrs){
-    if(k==='class') e.className=attrs[k];
-    else if(k==='html') e.innerHTML=attrs[k];
-    else e.setAttribute(k, attrs[k]);
-  }
-  if(children){
-    if(Array.isArray(children)) children.forEach(c => e.appendChild(typeof c === 'string' ? document.createTextNode(c) : c));
-    else if(typeof children === 'string') e.appendChild(document.createTextNode(children));
-  }
-  return e;
+/* -------------------- Local Storage Keys -------------------- */
+const LS_PROFILE = 'x_demo_profile_v1';
+const LS_POSTS = 'x_demo_posts_v1';
+
+/* -------------------- Default Data -------------------- */
+const defaultProfile = {
+  name: "Juan Dela Cruz",
+  handle: "@juandelacruz",
+  bio: "Developer • coffee enthusiast • building for the web",
+  avatarDataUrl: null,
+  bannerDataUrl: null,
+  location: "Manila, Philippines",
+  website: "example.com",
+  following:120,
+  followers:980
+};
+
+/* -------------------- State -------------------- */
+let profile = loadProfile();
+let posts = loadPosts(); // array of post objects
+
+/* -------------------- Profile load/save -------------------- */
+function loadProfile(){
+  try{
+    const raw = localStorage.getItem(LS_PROFILE);
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  localStorage.setItem(LS_PROFILE, JSON.stringify(defaultProfile));
+  return {...defaultProfile};
 }
 
-function renderPost(p){
-  const wrap = el('div',{class:'post'});
-  const bodyWrap = el('div',{class:'post-body'});
+function saveProfile(){
+  localStorage.setItem(LS_PROFILE, JSON.stringify(profile));
+  renderProfile();
+}
 
-  const head = el('div',{class:'post-head'});
-  head.appendChild(el('div',{class:'p-avatar'}, [document.createTextNode('JD')]));
-  const headMeta = el('div',{},[
-    el('div',{class:'small'}, p.author + " · " + p.time),
-    el('div',{class:'muted'}, '')
-  ]);
-  head.appendChild(headMeta);
+/* -------------------- Posts load/save -------------------- */
+function loadPosts(){
+  try{
+    const raw = localStorage.getItem(LS_POSTS);
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  // seed with 2 sample posts
+  const now = Date.now();
+  const seed = [
+    {
+      id: uid(), authorName: profile.name, handle: profile.handle,
+      avatar: profile.avatarDataUrl, text: "Excited to share this X-style profile demo — built with plain HTML/CSS/JS!",
+      images: [], likes: 12, retweets: 4, comments: 2, createdAt: now - 1000*60*60*5, liked:false, retweeted:false
+    },
+    {
+      id: uid(), authorName: profile.name, handle: profile.handle,
+      avatar: profile.avatarDataUrl, text: "Coffee + code = ❤️",
+      images: [], likes: 42, retweets: 10, comments: 6, createdAt: now - 1000*60*60*28, liked:false, retweeted:false
+    }
+  ];
+  localStorage.setItem(LS_POSTS, JSON.stringify(seed));
+  return seed;
+}
 
-  const text = el('div',{style:'margin-top:8px; white-space:pre-wrap'}, p.text);
-  const media = el('div',{class:'media'}, ''); // placeholder
-  const actions = el('div',{class:'post-actions'}, [
-    el('button',{class:'pill', 'data-id':p.id}, `Like · ${p.likes}`),
-    el('button',{class:'pill'}, `Comment · ${p.comments}`),
-    el('button',{class:'pill'}, 'Share')
-  ]);
+function savePosts(){
+  localStorage.setItem(LS_POSTS, JSON.stringify(posts));
+}
 
-  bodyWrap.appendChild(head);
-  bodyWrap.appendChild(text);
-  bodyWrap.appendChild(media);
-  bodyWrap.appendChild(actions);
-  wrap.appendChild(bodyWrap);
+/* -------------------- Render Profile -------------------- */
+function renderProfile(){
+  // banner
+  const bannerEl = qs('#banner');
+  if(profile.bannerDataUrl) bannerEl.style.backgroundImage = `url(${profile.bannerDataUrl})`;
+  else bannerEl.style.backgroundImage = '';
+
+  // avatar
+  const avatarEl = qs('#profileAvatar');
+  if(profile.avatarDataUrl) {
+    avatarEl.style.backgroundImage = `url(${profile.avatarDataUrl})`;
+    qs('#avatarInitials').style.display = 'none';
+  } else {
+    avatarEl.style.backgroundImage = '';
+    qs('#avatarInitials').style.display = 'block';
+    qs('#avatarInitials').textContent = getInitials(profile.name);
+  }
+
+  // text fields
+  qs('#profName').innerText = profile.name;
+  qs('#profHandle').innerText = profile.handle;
+  qs('#profBio').innerText = profile.bio;
+  qs('#displayName').innerText = profile.name;
+  qs('#displayHandle').innerText = profile.handle;
+  qs('#displayBio').innerText = profile.bio;
+  qs('#statFollowing').innerText = profile.following;
+  qs('#statFollowers').innerText = profile.followers;
+
+  // compose avatar
+  const composeAvatar = qs('#composeAvatar');
+  if(profile.avatarDataUrl) composeAvatar.style.backgroundImage = `url(${profile.avatarDataUrl})`;
+  else {
+    composeAvatar.style.backgroundImage = '';
+    composeAvatar.textContent = getInitials(profile.name);
+  }
+}
+
+/* -------------------- Helpers -------------------- */
+function getInitials(name){
+  if(!name) return '';
+  const parts = name.trim().split(/\s+/);
+  if(parts.length === 1) return parts[0].slice(0,2).toUpperCase();
+  return (parts[0][0] + parts[1][0]).toUpperCase();
+}
+
+function timeAgo(ts){
+  const s = Math.floor((Date.now() - ts)/1000);
+  if(s < 60) return s + 's';
+  const m = Math.floor(s/60);
+  if(m < 60) return m + 'm';
+  const h = Math.floor(m/60);
+  if(h < 24) return h + 'h';
+  const d = Math.floor(h/24);
+  if(d < 7) return d + 'd';
+  return new Date(ts).toLocaleDateString();
+}
+
+/* -------------------- Render Feed -------------------- */
+function renderFeed(){
+  const feed = qs('#feed');
+  feed.innerHTML = '';
+  // newest first
+  posts.slice().reverse().forEach(post => feed.appendChild(renderPostEl(post)));
+}
+
+function renderPostEl(p){
+  const wrap = document.createElement('div'); wrap.className = 'post';
+  // head
+  const head = document.createElement('div'); head.className = 'head';
+  const avatar = document.createElement('div'); avatar.className = 'p-avatar';
+  if(p.avatar) avatar.style.backgroundImage = `url(${p.avatar})`; else avatar.textContent = getInitials(p.authorName);
+  const meta = document.createElement('div'); meta.className = 'meta';
+  const who = document.createElement('div'); who.className = 'who'; who.textContent = p.authorName + ' ';
+  const when = document.createElement('div'); when.className = 'when'; when.textContent = timeAgo(p.createdAt) + ' · ' + p.handle;
+  const text = document.createElement('div'); text.className = 'text'; text.textContent = p.text;
+
+  meta.appendChild(who); meta.appendChild(when);
+  head.appendChild(avatar); head.appendChild(meta);
+
+  // media
+  const mediaWrap = document.createElement('div'); mediaWrap.className = 'media';
+  if(p.images && p.images.length > 0){
+    const n = p.images.length;
+    // simple grid logic
+    if(n === 1) mediaWrap.classList.add('grid-1');
+    if(n === 2) mediaWrap.classList.add('grid-2');
+    if(n === 3) mediaWrap.classList.add('grid-3');
+    if(n >= 4) mediaWrap.classList.add('grid-2'); // show 4 in 2x2 grid
+    // create images
+    p.images.slice(0,4).forEach(src=>{
+      const img = document.createElement('img');
+      img.src = src;
+      mediaWrap.appendChild(img);
+    });
+  }
+
+  // actions
+  const actions = document.createElement('div'); actions.className = 'actions';
+  // comment
+  const actComment = document.createElement('div'); actComment.className = 'action comment';
+  actComment.innerHTML = `💬 <span class="small">${p.comments}</span>`;
+  actComment.onclick = ()=> openCommentsModal(p.id);
+  // retweet
+  const actRetweet = document.createElement('div'); actRetweet.className = 'action retweet';
+  if(p.retweeted) actRetweet.classList.add('active');
+  actRetweet.innerHTML = `🔁 <span class="small">${p.retweets}</span>`;
+  actRetweet.onclick = ()=> toggleRetweet(p.id);
+  // like
+  const actLike = document.createElement('div'); actLike.className = 'action like';
+  if(p.liked) actLike.classList.add('active');
+  actLike.innerHTML = `❤ <span class="small">${p.likes}</span>`;
+  actLike.onclick = ()=> toggleLike(p.id);
+  // share
+  const actShare = document.createElement('div'); actShare.className = 'action share';
+  actShare.innerHTML = `🔗 <span class="small">Share</span>`;
+  actShare.onclick = ()=> sharePost(p.id);
+  // edit
+  const actEdit = document.createElement('div'); actEdit.className = 'action';
+  actEdit.innerHTML = `✏️ <span class="small">Edit</span>`;
+  actEdit.onclick = ()=> openEditModal(p.id);
+  // delete
+  const actDelete = document.createElement('div'); actDelete.className = 'action';
+  actDelete.innerHTML = `🗑️ <span class="small danger">Delete</span>`;
+  actDelete.onclick = ()=> deletePost(p.id);
+
+  actions.appendChild(actComment);
+  actions.appendChild(actRetweet);
+  actions.appendChild(actLike);
+  actions.appendChild(actShare);
+  actions.appendChild(actEdit);
+  actions.appendChild(actDelete);
+
+  // assemble
+  wrap.appendChild(head);
+  wrap.appendChild(text);
+  if(mediaWrap.children.length) wrap.appendChild(mediaWrap);
+  wrap.appendChild(actions);
+
   return wrap;
 }
 
-function loadFeed(){
-  const feed = document.getElementById('feed');
-  feed.innerHTML='';
-  samplePosts.forEach(p => feed.appendChild(renderPost(p)));
+/* -------------------- Post Actions -------------------- */
+function toggleLike(id){
+  const p = posts.find(x=>x.id===id);
+  if(!p) return;
+  p.liked = !p.liked;
+  p.likes += p.liked ? 1 : -1;
+  savePosts(); renderFeed();
+}
+function toggleRetweet(id){
+  const p = posts.find(x=>x.id===id);
+  if(!p) return;
+  p.retweeted = !p.retweeted;
+  p.retweets += p.retweeted ? 1 : -1;
+  savePosts(); renderFeed();
+}
+function sharePost(id){
+  // simulate copy link
+  const url = location.href + '#post-' + id;
+  navigator.clipboard?.writeText(url).then(()=>{
+    alert('Post link copied to clipboard (simulated).');
+  }).catch(()=>{ alert('Copy not available. URL:\n' + url); });
+}
+function deletePost(id){
+  if(!confirm('Delete this post?')) return;
+  posts = posts.filter(x=>x.id!==id);
+  savePosts(); renderFeed();
 }
 
-/* ---------- Interactions ---------- */
-document.getElementById('postBtn').addEventListener('click', ()=>{
-  const ta = document.getElementById('postText');
-  const txt = ta.value.trim();
-  if(!txt) { alert('Write something first.'); return; }
-  const newPost = {
-    id: Date.now(),
-    author: "Juan Dela Cruz",
-    time: "Just now",
-    text: txt,
-    likes:0,
-    comments:0
+/* -------------------- Comments (quick) -------------------- */
+function openCommentsModal(postId){
+  const p = posts.find(x=>x.id===postId);
+  if(!p) return;
+  const modalRoot = qs('#modalRoot');
+  modalRoot.style.display = 'block';
+  modalRoot.innerHTML = `
+    <div class="modal-backdrop" id="backdrop">
+      <div class="modal">
+        <h3>Comments — ${p.comments}</h3>
+        <div style="margin:10px 0;">
+          <textarea id="commentText" placeholder="Write a comment..." style="width:100%;min-height:80px;padding:8px;border:1px solid ${getComputedStyle(document.body).getPropertyValue('--border')};border-radius:8px"></textarea>
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:8px">
+          <button id="cancelComment" class="btn">Cancel</button>
+          <button id="postComment" class="btn primary">Post comment</button>
+        </div>
+      </div>
+    </div>
+  `;
+  qs('#cancelComment').onclick = ()=> { modalRoot.style.display='none'; modalRoot.innerHTML=''; }
+  qs('#postComment').onclick = ()=>{
+    const txt = qs('#commentText').value.trim();
+    if(!txt){ alert('Write something'); return; }
+    p.comments += 1;
+    savePosts(); renderFeed();
+    modalRoot.style.display='none'; modalRoot.innerHTML='';
   };
-  samplePosts.unshift(newPost);
-  ta.value='';
-  loadFeed();
-});
-
-document.getElementById('tabs').addEventListener('click', (e)=>{
-  const t = e.target.closest('.tab');
-  if(!t) return;
-  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
-  t.classList.add('active');
-  const tab = t.dataset.tab;
-  // simple tab switching: show/hide sections
-  if(tab==='about'){
-    document.querySelector('.layout').scrollIntoView({behavior:'smooth'});
-    highlightCard('aboutCard');
-  } else if(tab==='friends'){
-    highlightCard(null);
-    document.querySelector('.friends-grid').parentElement.scrollIntoView({behavior:'smooth'});
-  } else if(tab==='photos'){
-    alert('Photos tab — demo only.');
-  } else {
-    // posts
-    window.scrollTo({top:0, behavior:'smooth'});
-  }
-});
-
-function highlightCard(id){
-  document.querySelectorAll('.card').forEach(c=>c.style.boxShadow='var(--shadow)');
-  if(id){
-    const card = document.getElementById(id);
-    if(card) card.style.boxShadow = '0 14px 30px rgba(24,119,242,0.12)';
-  }
 }
 
-/* small like interaction via event delegation */
-document.addEventListener('click', function(e){
-  const likeBtn = e.target.closest('button[data-id]');
-  if(!likeBtn) return;
-  const id = Number(likeBtn.getAttribute('data-id'));
-  const p = samplePosts.find(x=>x.id===id);
-  if(p){ p.likes += 1; loadFeed(); }
+/* -------------------- Edit Post Modal -------------------- */
+function openEditModal(postId){
+  const p = posts.find(x=>x.id===postId);
+  if(!p) return;
+  const modalRoot = qs('#modalRoot');
+  modalRoot.style.display = 'block';
+  modalRoot.innerHTML = `
+    <div class="modal-backdrop">
+      <div class="modal">
+        <h3>Edit Post</h3>
+        <textarea id="editText" style="width:100%;min-height:100px;padding:8px;border:1px solid ${getComputedStyle(document.body).getPropertyValue('--border')};border-radius:8px">${p.text.replaceAll('&','&amp;')}</textarea>
+        <div style="margin-top:8px"><strong>Images</strong></div>
+        <div id="editPreview" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"></div>
+        <div style="margin-top:8px;display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <button id="addEditImage" class="icon-btn">🖼️ Add/Replace</button>
+            <input type="file" id="editImageInput" accept="image/*" multiple style="display:none">
+          </div>
+          <div>
+            <button id="cancelEdit" class="btn">Cancel</button>
+            <button id="saveEdit" class="btn primary">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  const editPreview = qs('#editPreview');
+  // show current images
+  p.images.forEach((src, idx)=>{
+    const img = document.createElement('img'); img.src = src; img.style.width='120px'; img.style.height='80px'; img.style.objectFit='cover'; img.style.borderRadius='8px';
+    const del = document.createElement('button'); del.textContent='✖'; del.style.marginLeft='6px';
+    del.onclick = ()=> {
+      p.images.splice(idx,1); openEditModal(postId); // reopen modal to refresh preview
+    };
+    const wrap = document.createElement('div'); wrap.style.display='flex';wrap.style.alignItems='center';
+    wrap.appendChild(img); wrap.appendChild(del);
+    editPreview.appendChild(wrap);
+  });
+
+  qs('#addEditImage').onclick = ()=> qs('#editImageInput').click();
+  qs('#editImageInput').onchange = function(){
+    const files = Array.from(this.files).slice(0,4 - p.images.length);
+    if(files.length===0) return;
+    let loaded=0;
+    files.forEach(file=>{
+      const reader = new FileReader();
+      reader.onload = e=>{
+        p.images.push(e.target.result);
+        loaded++;
+        if(loaded === files.length) openEditModal(postId); // refresh modal
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  qs('#cancelEdit').onclick = ()=> { modalRoot.style.display='none'; modalRoot.innerHTML=''; }
+  qs('#saveEdit').onclick = ()=>{
+    const newText = qs('#editText').value.trim();
+    p.text = newText;
+    savePosts(); renderFeed();
+    modalRoot.style.display='none'; modalRoot.innerHTML='';
+  };
+}
+
+/* -------------------- Create Post -------------------- */
+const composeText = qs('#composeText');
+const composePreview = qs('#composePreview');
+const composeImageInput = qs('#composeImageInput');
+const addImageBtn = qs('#addImageBtn');
+
+let composeImages = []; // data urls
+
+addImageBtn.onclick = ()=> composeImageInput.click();
+composeImageInput.onchange = function(){
+  const files = Array.from(this.files).slice(0,4 - composeImages.length);
+  if(files.length === 0) return;
+  files.forEach(file=>{
+    const reader = new FileReader();
+    reader.onload = e => {
+      composeImages.push(e.target.result);
+      renderComposePreview();
+    };
+    reader.readAsDataURL(file);
+  });
+  // reset input
+  this.value = '';
+};
+
+function renderComposePreview(){
+  composePreview.innerHTML = '';
+  composeImages.forEach((src, idx)=>{
+    const img = document.createElement('img'); img.src = src;
+    img.style.width='120px'; img.style.height='80px'; img.style.objectFit='cover'; img.style.borderRadius='8px';
+    const del = document.createElement('button'); del.textContent='✖'; del.style.marginLeft='6px';
+    del.onclick = ()=> { composeImages.splice(idx,1); renderComposePreview(); };
+    const wrap = document.createElement('div'); wrap.style.display='flex';wrap.style.alignItems='center';
+    wrap.appendChild(img); wrap.appendChild(del);
+    composePreview.appendChild(wrap);
+  });
+}
+
+qs('#postCreateBtn').onclick = ()=>{
+  const txt = composeText.value.trim();
+  if(!txt && composeImages.length === 0){ alert('Write something or add an image.'); return; }
+  const newPost = {
+    id: uid(),
+    authorName: profile.name,
+    handle: profile.handle,
+    avatar: profile.avatarDataUrl,
+    text: txt,
+    images: composeImages.slice(0,4),
+    likes: 0, liked:false,
+    retweets:0, retweeted:false,
+    comments:0,
+    createdAt: Date.now()
+  };
+  posts.push(newPost);
+  savePosts();
+  renderFeed();
+  // reset composer
+  composeText.value = '';
+  composeImages = [];
+  renderComposePreview();
+};
+
+/* -------------------- Edit Profile (avatar/banner and contenteditable saves) -------------------- */
+// avatar
+qs('#editAvatarBtn').onclick = ()=> qs('#avatarInput').click();
+qs('#avatarInput').onchange = function(){
+  const file = this.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    profile.avatarDataUrl = e.target.result;
+    saveProfile();
+    // update existing posts authored by user (optional: keep existing avatars)
+    posts.forEach(p=>{ if(p.handle === profile.handle) p.avatar = profile.avatarDataUrl; });
+    savePosts(); renderFeed();
+  };
+  reader.readAsDataURL(file);
+};
+
+// banner
+qs('#editBannerBtn').onclick = ()=> qs('#bannerInput').click();
+qs('#bannerInput').onchange = function(){
+  const file = this.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    profile.bannerDataUrl = e.target.result;
+    saveProfile();
+  };
+  reader.readAsDataURL(file);
+};
+
+// contenteditable autosave
+[['#profName','name'], ['#profHandle','handle'], ['#profBio','bio']].forEach(([sel, key])=>{
+  const el = qs(sel);
+  el.addEventListener('input', () => {
+    profile[key] = el.innerText;
+    saveProfile();
+  });
 });
 
-/* initial load */
-loadFeed();
+/* -------------------- Init Render -------------------- */
+function init(){
+  renderProfile();
+  renderFeed();
+  // reflect profile to left column after editing
+  ['profName','profHandle','profBio'].forEach(id=>{
+    qs('#'+id).addEventListener('input', ()=>{
+      qs('#displayName').innerText = qs('#profName').innerText;
+      qs('#displayHandle').innerText = qs('#profHandle').innerText;
+      qs('#displayBio').innerText = qs('#profBio').innerText;
+    });
+  });
+}
+init();
 
-/* (Optional) dynamic profile data - you can change these values */
-document.getElementById('name').textContent = 'Juan Dela Cruz';
-document.getElementById('headline').textContent = 'Frontend Developer • Manila';
-document.getElementById('aboutText').textContent = "Hi! I'm Juan — I build accessible frontends, draw diagrams, and drink a lot of coffee.";
-// avatar initials
-document.getElementById('avatar').textContent = 'JD';
+/* -------------------- Save posts helper -------------------- */
+function savePosts(){ localStorage.setItem(LS_POSTS, JSON.stringify(posts)); }
+
+/* -------------------- Save profile helper exported earlier -------------------- */
+function saveProfile(){ localStorage.setItem(LS_PROFILE, JSON.stringify(profile)); renderProfile(); }
+
+/* -------------------- Keyboard shortcuts / niceties -------------------- */
+document.addEventListener('keydown', (e)=>{
+  if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k'){ // focus compose
+    e.preventDefault(); qs('#composeText').focus();
+  }
+});
+
+/* -------------------- End of script -------------------- */
 </script>
 </body>
 </html>
