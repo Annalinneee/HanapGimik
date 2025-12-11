@@ -1,661 +1,454 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Creator</title>
+<title>Profile + Events + Create Event Wizard</title>
+
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<!-- FontAwesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 <style>
-  /* ----------------- Base ----------------- */
-  :root{
-    --bg:#f5f8fa;
-    --card:#fff;
-    --text:#0f1419;
-    --muted:#536471;
-    --accent:#1d9bf0;
-    --danger:#e0245e;
-    --border:#e6ecf0;
-    font-family: Inter, "Segoe UI", Roboto, system-ui, -apple-system, "Helvetica Neue", Arial;
-    -webkit-font-smoothing:antialiased;
-    -moz-osx-font-smoothing:grayscale;
+  /* --- Page basics --- */
+  :root { --primary: #0a67b2; --accent: #0f4c86; --bg: #cff2ff; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: Arial, sans-serif; background: var(--bg); color:#083047; }
+
+  /* Nav */
+  nav { background: var(--primary); color:#fff; padding:12px 30px; display:flex; justify-content:space-between; align-items:center; }
+  nav .links a { color:#fff; text-decoration:none; margin-left:20px; font-size:15px; }
+
+  /* Profile container */
+  .profile-container { width:80%; background:#2d506b; color:#fff; margin:36px auto; padding:36px; border-radius:20px; display:flex; align-items:center; box-shadow:2px 6px 18px rgba(0,0,0,0.12); }
+  .profile-image img { width:170px; height:170px; border-radius:50%; object-fit:cover; border:4px solid #fff; }
+  .profile-info { margin-left:28px; flex:1; }
+  .profile-info h1 { margin:0; font-size:36px; }
+  .edit-profile { margin-left:auto; margin-top:80px; }
+  .edit-profile a { color:#fff; text-decoration:none; border-bottom:1px solid #fff; cursor:pointer; }
+
+  /* Events card */
+  .event-card { width:80%; background:#fff; margin:20px auto; padding:20px; border-radius:12px; box-shadow:2px 6px 16px rgba(0,0,0,0.08); }
+  table { width:100%; border-collapse:collapse; margin-top:10px; }
+  th, td { padding:12px; border-bottom:1px solid #e6e6e6; text-align:left; }
+  th { color:var(--primary); }
+  .create-btn { text-align:right; margin-top:12px; }
+  .create-btn button { background:var(--primary); color:#fff; border:none; padding:10px 18px; border-radius:8px; cursor:pointer; }
+
+  /* Map */
+  #map { width:80%; height:480px; margin:30px auto; border-radius:12px; border:3px solid var(--primary); }
+
+  /* Footer */
+  footer { background:#08223b; color:#fff; padding:40px 60px; display:flex; gap:20px; justify-content:space-between; flex-wrap:wrap; margin-top:40px; }
+  .footer-section { width:30%; min-width:200px; }
+  .footer-title { font-weight:700; margin-bottom:10px; }
+  .social-icons { display:flex; gap:12px; font-size:20px; }
+
+  /* --- Wizard full-page layout (hidden by default) --- */
+  .wizard-page { display:none; position:fixed; inset:0; background:var(--bg); z-index:60; overflow:auto; padding-bottom:60px; }
+  .wizard-top { display:flex; align-items:center; justify-content:center; padding:28px 12px 6px; position:relative; }
+  .wizard-back { position:absolute; left:24px; top:24px; font-size:22px; color:var(--primary); cursor:pointer; border:2px solid rgba(10,103,178,0.15); width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:transparent; }
+  .wizard-title { font-size:26px; color:var(--primary); font-weight:700; }
+
+  .wizard-body { display:flex; justify-content:center; }
+  .wizard-card-wrap { width:760px; background:rgba(10,103,178,0.12); padding:36px; border-radius:12px; margin:22px; }
+  .wizard-card { background:#fff; padding:22px; border-radius:8px; }
+  .wizard-step-title { color:var(--primary); font-size:18px; font-weight:600; margin-bottom:12px; }
+  .field { margin:10px 0; }
+  .field label { display:block; font-size:13px; margin-bottom:6px; color:#2b4b66; }
+  .field input[type="text"], .field input[type="date"], .field input[type="time"], .field textarea, .field select { width:100%; padding:10px 12px; border-radius:8px; border:1px solid #d9e6f0; background:linear-gradient(#f6fbff,#ecf6ff); }
+  .two-col { display:flex; gap:12px; }
+  .two-col .col { flex:1; }
+
+  .wizard-actions { display:flex; justify-content:space-between; align-items:center; margin-top:12px; }
+  .wizard-actions .left { color:#0a67b2; }
+  .wizard-actions button { background:var(--primary); color:#fff; border:none; padding:9px 14px; border-radius:8px; cursor:pointer; }
+
+  /* mini-map inside wizard */
+  #wizardMap { height:200px; border-radius:8px; margin-top:8px; }
+
+  /* small image preview */
+  .img-preview { width:110px; height:80px; object-fit:cover; border-radius:6px; border:1px solid #e6e6e6; }
+
+  /* responsive */
+  @media (max-width:900px) {
+    .wizard-card-wrap { width:92%; }
+    #map { height:360px; }
   }
-  *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--text);line-height:1.35}
-  .container{max-width:950px;margin:18px auto;padding:0 12px}
-
-  /* ------------- Header ------------- */
-  .nav{
-    background:var(--card);border-bottom:1px solid var(--border);
-    padding:10px 14px;position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:12px;
-  }
-  .nav .brand{font-weight:800;font-size:18px;color:var(--text)}
-  .nav .search{margin-left:auto;background:#eef3ff;padding:8px;border-radius:999px;font-size:14px;color:var(--muted)}
-
-  /* ---------- Profile header (banner + avatar) ---------- */
-  .profile-header{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:0 6px 16px rgba(11,15,22,0.04)}
-  .banner{
-    height:200px;background:#dfe9ff;background-size:cover;background-position:center;position:relative;
-  }
-  .banner .edit-banner{
-    position:absolute;right:12px;bottom:12px;background:#0008;color:white;border:none;padding:6px 10px;border-radius:8px;cursor:pointer;font-size:13px;
-  }
-  .profile-row{display:flex;gap:16px;padding:12px 16px;align-items:flex-end}
-  .avatar{
-    width:120px;height:120px;border-radius:50%;border:4px solid var(--card);background:#ddd;background-size:cover;background-position:center;flex-shrink:0;position:relative;
-    display:grid;place-items:center;font-weight:700;color:#444;font-size:28px;
-  }
-  .avatar .edit-av{position:absolute;right:6px;bottom:6px;background:#0008;color:white;border:none;padding:6px;border-radius:6px;cursor:pointer;font-size:12px}
-
-  .profile-meta{flex:1}
-  .profile-meta h1{margin:0;font-size:20px}
-  .profile-meta h1[contenteditable]{padding:4px;border-radius:6px}
-  .profile-meta p{margin:6px 0;color:var(--muted)}
-  .profile-meta p[contenteditable]{padding:4px;border-radius:6px}
-
-  .profile-actions{display:flex;gap:8px;margin-left:auto}
-  .btn{background:var(--card);border:1px solid var(--border);padding:8px 12px;border-radius:8px;cursor:pointer;font-weight:600}
-  .btn.primary{background:var(--accent);color:white;border:none}
-
-  /* ---------- Layout: left profile column + feed ---------- */
-  .layout{display:grid;grid-template-columns:300px 1fr;gap:14px;margin-top:14px}
-  @media (max-width:920px){.layout{grid-template-columns:1fr}}
-
-  /* left column */
-  .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px}
-  .card h3{margin:0 0 8px 0}
-  .info-row{display:flex;gap:10px;align-items:center;margin:8px 0;color:var(--muted);font-size:14px}
-
-  /* compose box */
-  .compose.card{display:flex;gap:12px;align-items:flex-start;flex-direction:column}
-  .compose .top{display:flex;gap:12px;width:100%}
-  .compose textarea{flex:1;min-height:84px;border:1px solid var(--border);border-radius:10px;padding:10px;font-size:15px;resize:none}
-  .compose .controls{display:flex;justify-content:space-between;align-items:center;width:100%}
-  .icon-btn{background:transparent;border:none;cursor:pointer;font-size:14px;color:var(--muted);padding:6px;border-radius:8px}
-  .post-btn{padding:8px 12px;border-radius:999px;background:var(--accent);color:white;border:none;cursor:pointer;font-weight:700}
-
-  .image-preview{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
-  .image-preview img{width:120px;height:80px;object-fit:cover;border-radius:8px;border:1px solid var(--border)}
-
-  /* feed */
-  .feed .post{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:12px;box-shadow:0 6px 12px rgba(11,15,22,0.03)}
-  .post .head{display:flex;gap:10px}
-  .post .head .p-avatar{width:46px;height:46px;border-radius:50%;background:#ccc;background-size:cover;background-position:center;flex-shrink:0}
-  .post .meta{flex:1}
-  .post .meta .who{font-weight:700}
-  .post .meta .when{color:var(--muted);font-size:13px}
-  .post .text{margin-top:8px;white-space:pre-wrap}
-  .post .media{margin-top:10px;display:grid;gap:6px}
-  .post .media.grid-2{grid-template-columns:1fr 1fr}
-  .post .media.grid-3{grid-template-columns:1fr 1fr;grid-auto-rows:120px}
-  .post .media img{width:100%;height:100%;object-fit:cover;border-radius:8px}
-
-  .post .actions{display:flex;gap:6px;margin-top:10px}
-  .action{display:flex;gap:8px;align-items:center;padding:8px;border-radius:8px;color:var(--muted);cursor:pointer}
-  .action.like.active{color:var(--danger)}
-  .action.retweet.active{color:green}
-
-  .small{font-size:13px;color:var(--muted)}
-
-  /* modal */
-  .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.35);display:grid;place-items:center;z-index:200}
-  .modal{background:white;border-radius:12px;padding:14px;max-width:720px;width:95%;box-shadow:0 12px 40px rgba(11,15,22,0.35)}
-
-  /* utilities */
-  .right{margin-left:auto}
-  .muted{color:var(--muted)}
-  .danger{color:var(--danger)}
 </style>
 </head>
 <body>
 
 <!-- NAV -->
-<div class="nav">
-  <div class="brand">HanapGimik</div>
-  <div class="search">Search</div>
-</div>
+<nav>
+  <div class="logo">HanapGimik</div>
+  <div class="links">
+    <a href="#">Contact Us</a>
+    <a href="#">About Us</a>
+    <a href="#">Log Out</a>
+  </div>
+</nav>
 
-<div class="container">
-
-  <!-- PROFILE HEADER -->
-  <div class="profile-header" id="profileHeader">
-    <div class="banner" id="banner">
-      <button class="edit-banner" id="editBannerBtn">Edit banner</button>
+<!-- PROFILE -->
+<div id="profileView">
+  <div class="profile-container">
+    <div class="profile-image"><img id="profilePic" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxMSEhUTExIVFRUVFRYYFRgWFRUXFRUXFRcXFhcVFxgYHSggGBolGxcVITEhJSkrLi4uGB8zODMsNygtLisBCgoKDg0OGhAQFysdHR0tLS0rLS0tLS0rLS0tLS0rKy0tLSstNy0tLSsrLSstLS0tLSstLSsrLS0tKzc3LTc3Lf/AABEIAPgAywMBIgACEQEDEQH/xAAcAAABBQEBAQAAAAAAAAAAAAAEAQIDBQYABwj/xABDEAACAQIDBAgCBwYFAwUAAAABAhEAAwQSIQUxQVEGEyJhcYGRoTKxBzNCwdHh8BQjUmJysiRzgpLxFVOiFkN0g5P/xAAYAQADAQEAAAAAAAAAAAAAAAABAgMABP/EACIRAAICAgIDAAMBAAAAAAAAAAABAhEhMQMSIjJBE1GRYf/aAAwDAQACEQMRAD8A3nR8MLRDZcwuNOUZVnTcOAqzqr6OYoXbHWBcoe45CyDAkcRofKrKoLB0tDprpptcDWARbKxAbMJ7Su4byOkcxBFWs5YJ15Vl9n4pc10NcFt0vPkzfCysRK/7p9a0JzRLCI79PI1N3ZmSEDL2eMR561TPezYtANALd3xJGUT70bgLbW17TbyzSdAoJmByUUNcg4lWCrrbftiJcCNCRvg0wUwk1wptNe4FEkgAcToPWmAOptpT1gIWdDry151WXtv2Vntg/wBOp/D3oHEdLhbPZSfEwfICZoNjJGpZpK5l1B393KnCyQSwgkxA4ADf61iB09g9q0cvJXhvcVY4L6QMId7Pb5i6hIn+pJFToY0u0cIzqAu/MJ5gTr7V3/TxAUkwu6TuFT7N2pZvibN1LnPKwJHiN4qe4+oIPj4UeqE7sFSwBGgnu+XfXMqgGRrB8dNYqa86niJ56E+lCbRwtu4AHZgqsrDKxQ51PZJYa6cqFBsfg7gYDtKx5gzPnRjgLrEk+9Z7ae0MTYIy27T2mZQLhYoVLNBDoBEjfO5t2lXLsf1pWjSA8kdjDLae5d3vdK5zPBAQigcAATWO6Vpigi30tLcdc5ZCSFYFtCN+oURWyy8TLdwA++m23UxlgqdCPDhBqiZl45M30Mj9lBC5AWkId6dlezpyq5NC7Ls9Wt1P4cRdA/pns/8AjFEmgG7yJSzSV1MgFd0RUjCLO/PcnQDjyG6regtix1On/cuf3UZNBBexa6krpogEt7LRuY1LaaGTv1jWjbWFKCMocDdrlI8QdPShsFhip0Lakky7cfHdRyXSTE+XEUqmkI0wHay51yOAFYdoTMgcPCqHY2zls39JBa3cJEkgDMkaHQbuFaPGLJAOo18axe2+kCYS+5+JshVRyGh9orSHiW3SHb1vCL2tXb4VG88z3CvOdo7Yu4lyblxss6JPZA4SBoT41XbS2s95y51ZvblryFQYQHvJPACSaF2PVFldxEABWIjeRp70K+NdQI3czr403ad3IscTz1PlVXaxZgqeNNRgv9rVjBPvB9ant4ZG+FwDyY6+u6qC4akw93kaxrNBkuWiHGZSNzqSGXwYaj1rZ7B6fXFAGJXrVEDrEhboHNl0V/KDWEwG0G+EkleIP3cqsLtjTMp0Pt5UrNSPZtnX7N8DEWWDZ1C5l3gAkwQYKtwIOulG3XA4D9d1eJ7F21dwl3rbegOlxZm3cHJ13g8Q41HgSD6zsPatvG2RdtyAWh1PxIy70PPgQRvBBpaBVBePYG2wYZgYBB3EE08uDlI3MPcbx+u+uxi9iOZAqHDXhb7L/CdQeXOYrXmmAIhiN0Hlp+jQz2Wkabh6nnUmI2kiaBs55AT6ncKa+LuR2bWpEiWGUct2+mSX7NbaBnHbu/1gnxKJSUDsQsbbs5zM1+6zEbiZjTuER5UbTJmaoSlpK6sAh2QR1II3F7hHhmoyhtm/Vj+u5/eaIFCOgy2LSV1LTCh+GcZZ3zuik6uWDkCQCAZ3A7xFCYdyMwT4hqUfQH+ZDuPl50PtbbLWMNdxFxVHVr2VnVmOignvJG6p9bYLKD6QOlv7KOoskdcwlm39Up3R/OeHLfXkzsznUkk75M+U03EYl7txmdizsS1xzzPy7u6kv3MggHXnyFBuy0VQ+7cC9ka86L2ep3k+MaADvNVOHUkiftbh9pvyrU4bC5VGmvBfDj5fOniqA8lRtRpPhvJ+/kO6qBrhzTy/X31fbXUmeMb/AB4LVHetwY5EA953mimBojL8u/50qMd/rTFH31Jh0k+X5fhTClpgbk6nXvA7Q/HwrR4F43xDDskfC3d3HurN4S2QQw051psEsgiN8Fhwn+IVNlERYuxlO6PkaM6MbbOAvG5qbDwt9BJKgExdQcSsmRxE91TvbDLlPKVP3VT3gUOVtx3H7q2jNXg93tMtxVZSGUgMpG4g6hh5UPcwM3Q8mAPhB7BJ+0RxNYT6NNtFC2CdpWGfDEncN9yyDyHxAd7cAI9IsARPGlcUyWUVeKt5NWUBAJL8QTvLCPh7xu8KFxW0WsqoyEhzlRwCyAtqJyg6d+6ry84iN5rL4rZWHthkS2xJB0625x/hUMAB3AUXFIZMfsZYtEcrt0ejH86MoPYqBbKqBAUsAOUGIos0YhZxpK6ummAM2W02gf57n95oqh9nIFtgDcHuAeAc0RWjo0nZ1KBSUsUQEezsU90CMmhYFTJOhie48aw/0xbQKCxhc3xBr9yP4UhLaxykuf8ATWt2djF67eFcmCh0bSe1HHTiK8k6bY84rH32nTOLKd1qxM+rlj/qpeyMo5Km0cqSd7GfwoHE3II0zMToOZNEY3EDrCB8Nsa+O4Cm4KwQRcPxNOWfsrxbxpEVf6LXY9kWczv2rmmc8p3W15d/5GrzDsSsnW454blG5V8Bv8vGsyLu4d8+Z1P68ascJiW7MHUnT8T6k+lOmCibaGGicuq2zAP8d07z4AwPI1RPhDqeChj/ALRM+tbO0UKKJ0BZjznUL+NVu0sMFSBvcBB5tLH3itQTLWcLIX+oD1FE4bAmYjeWFXWEwPwT/wB5CY5TVrb2eA3f1h9QZHzoZNSKvA4E/jp5j7xVzhsLl8Br/pOk+R0PjNE3FW2c32Tv8DrPkw96mxN5Qmb+ETHBkb4hPh8hRo1kOIQBT3GfAyAfmG9arMXZDhl46lf6t8frnU97HCI3xof5lOgPmD61TtiiDv5Ce8bj+u+gzIHs4p7eW4hIe06uh5Mrbj3HUEcia9xwG1BetW7yDsXFDADWJ3g94Mjyrw3GmSSNA6Fh3Ou8V6N9FO0M+Ge0f/acEf03RP8Acr+tTdmkvpubDabpmqvpFs/rUK5ViNOc7wRVgZEAkkmY4eZqLE4ghHLIQFUk6hjHEiKKlimTKrZP1K+LfOKKobZv1S/6o8JMe0URTx0ZnUldSUwDtnfVL/Vc93NEUPs76pPP3Y0RQjozFFKaQGkomIlK27Vy4R2bSPc14ZFLEgndurwG1dIGdt5DMe8sZPua9o6b4rq9m4gDQ3FFof8A2kKf/HNXiOKOh7go+bfhUU7Y8CLDpMzzzMeZO4fM0bdvcTvOgHID8fxqu2dckxz1p129Jkbhovf+VO0Mghruu/xqe1fkz+gP186qs5mB50X1gAjjx/D9d1ZoZUWhxxHHefYfnWjs2ezbd93ZgHx/E1mejWCbF4lUA7CDO54QNfcwPWtX0ylLCOBAW6nqDNC8jdcE2FZDuIJBHqHNMbaKhG5yj+8H5Vmtj44s7rOoJPoxNJtK9kcidAWU+GYwfem7CdC6xGLJETxMfhVba2gR2eWnkeHzo23hiyINxdZU96mCPl61nccYJ4GSCORB/GkUslJQpBjYiOOg0/0nd6GPWhr13U/r9b6EXEyJiYEMOY4+NIrSBrI3TzG75UWTRZWrhKHmpn8fvrT/AEM47/EtbnS5Yb1tsGHsxrI4C27XAiqWLKRCgknlUvQPFvhcfZzqVK3RbuKZBHWApBHmDRigSyfRUe1Q4q4NOIMq3cGEVIrcDWd2ricSrsiWlBJOW4XLLB3MEgQ3rFbkWMEVsk2YIs2xyUj0JH3URQmxif2e1O/KZ8cx96Low0MxpNJXGkmmAPwf1aj+r+41MKFw9zsjz+ZqZblLD1CyQmuJpuanLE67uPcOJ9KZgMF9I+JZcPh7Baczu555UBAkf1MfSvNcepFtz3iP9sVpOm20hiMVcuD4VUJbHJFkA+ZJNVe28NFs6cSfRRUlhlYrAbtfD4ZsH12HsdU9shGGQqXVuy0kaMQYMzO+sxcQACN5Gp+4VucRiw2BVbcH9pBkHWAMoYxwIbT/AIqr6O7IQ4iLq5goOUMNJ4Ejj501j9cmew+BuspKW2I4tlOUee6obWBdjCgsx5AhRzZieAr2jqQViNOUVjellq5aUtbtteAnMoUhVGmrEDUTWjkMkkgjoxZfZ9ssgF5Wg3SAM4I4DiVqDph0js4jCJaTRziE7JmYkkn10qswOz8aUS6Ww62rj5WFtbbOgAkanQMdd54VF/6eutlvOysgukAIQHj+NlOsSSM3dyp3x1kWPKnigXZdtgMTfXU2r6kjmnamiekdqJYagENP8Vu8JtuO6Qyn+kVqOjPRy5hrj2b6EWsSqsjGCCyggrIOvZYHvq2xf0fZbYnEk2lDQpQSquQWtgz8BIBjgRpAkVJ7LYox2xNt2zZ6m8xUgg27gElHiJI4gig9t4sX3DZVS4AQ+vZuEbm8fyrR3OgJsZS/aLTlADEhBxfL5aDUknhJEHSPohZUynWOrpbhv3ltrTgtnCoAAA2gGaRAOtPDjtk+SdLGTHtYB7SND8uDem499OwNi4zgIkme0o3HvjeDV3gOhlw4lFw124qKim491SUNwAZlTcSpMwa9SwuAW0oECRvIAE9+laUa+ixz8ozXQ7Bm3YxDoi9fOWG3pl0CmN+pJjwrKdLrFy1j0a4ys7WsM7OkBWIZhm9q0+Ex5sYq+fsk3JHM5SQfUR51gsVduXbjXLrl7jDtMd+m5QNwA4AUFoLPfcReuQjBZmJJO8xTtpbRspbz3ZUDdpJngBzofZTKbNl5JDW1OvDTWqnpli1KBROYEELB1njSuVEWix2Yf3FqOKT6kmp6G2cR1FqP+2tEGqR0BiE0lLXVjAmGPYXw+81KHoeyuVFHJRPjGvzp80FoIStyqrpXtPqrBAMFwZPJRv8AuHnRpuZRJ4Vh+lmKLzPHeByG5R7UJMaKMfdJYsTxKj760GNwOdSB/C3rl/4qvwmFkebMT/SKu8HiAFYnhl9Mp/KkKFJ0MUEFGOigMhPwq2ZiEMbg2uvOtJjrXV3g0QQYccpHuNN9Z7oxiLVq9fsXAS1027dgAdrOLhgAxoNQTzA0rZ7VHWAiO0EnhrlbXx407WLGjLNBOBug0fcsTw0NZ3Zl6PKtRhbwIpEV2CYHo7bQhltjfO8gTrrp41b4TA5CIA3QdBH51PhmFGFwBVU8EJLJndv3ZZAIAtmRGkGrG6+az5VQ7UuS0c21q/sj91HdSfSnXxJkJuoO0QQIPlQ74CRBPqB3/ia7ZN7eOW+j7xpkydZor1wkGaG2hdgUTiMRFU2IuZm86RspRQbe2cbSXHPx3VlR/CjNB8zurI3rM9qNQYYeW/2rf9MLo7If+KyHzdki2SR2e+ST5Vm72By3II0YlDynep89famqibNVsTH3BbsALKC2Q7cFg9kxxHOidsYFyCxu5bcElQQRzEH9cKTogv7nIeB+dd0nVltMqmND5AfjS9bFLPBfVWv8tfkKmmh9n/UWf8m1/YKmqiWCb2PFdTZrpo0AFY0grq6lCC7RuwsedYbaxzNFazalySfT03msrbOZjcI01IHJR2V+TH0qbyy0VgZa7Fi63PsL48fnQ5vZVM7uyD7D76j21dK2bSj7TAn/AFGflT7lnMrLzBHj2QY96zCgHA4LrNp4RSJD4iyTpPwNmPsvvW9xeIvLgcDfUC7i7tx7FwO4UdbeW4TnYzoHtAATBnSvNrGLGlu6zIVINu6CVZSNVIYag7jPdV/0ic/9H/ZRma6rWCgUCClvN2kgSQOSz8U8TV+NqqZz8iafZFnse4zWrbMIYqA43Q47LjXdDA1fYS/FYf6N8Z1mFNsntWrhBnfD9oe+b0rZW1qM1TOvil2jZocHeqwF3Ss/hbtWCYgULGkrMvf2klt2e4wU9aRqY4wBWxsbQtdVmnSKrb+zbd0livaOhI4jkedJhuilpDEsy5dFLSo8qKA2tM7Ye0UvO7W2Vl4wZAI03jjvq2xF2KalpUEKAoHIAfKhcXdmswLYFibhNV+InsgGGuXbNpfG7dVCfJSx8qOI1qox201t4/Z9jXt3nuMFIBCpbdVY+DEt35CKMFcheaVRY76Rb4d7gBBVsRYsDQggWrL3WIneM14aiqkXOssfzpoT/Na7SnzAqj6TYN7ePxTuZZXt5DJJ6rKrJM6zDCRRWz8VreA4oHA/mSQfaqcryQ4l4m76P3hr5e9L0uaLD75ZYB7xqfaqTZeKAZRwdF47uR9at9q3la04doZdY4HQj76n2KUW+FEWrQ5Wrf8AaKfUeG+rt/5dv+0U+qIk9nGkzVxNRlqwCOmu0AnlTgKExt8ZWAIkRm7p3TypGMkZzbGJ0bvketBYpMouKPs5U9LUn3mk2pMif4pPgN9R7SuEXMRO4i1cX/bkapov8Bdt2My2Tw7BHmtTkZQr8JWe4qcp9j7UmDxasiA/ZYL4a6fOh9o4wI7J9kmRy3QwjvE+xpqEsqOkdpbd5kdZQgOhAkqr7xH2lDT3irfbdq7htl4cYYCHRHa4rS0kuxUf7ogjnUO2EF2ylw6vZJB/mRoDD5MPzojpJYVMBgFS/lDlBcsqQVfMl0peJAB0KkRqJO/SqwJTMr0a2xcs4tDdmLylXBEHUyGPgfma9WsOCAa8Z2TazYi2DrlIM+mlem4DFG2crfDwpOSi3DeTTWtaG2htN7GvUO6jihSZ8GIrrNzUEUTjLWdYO4j076mW+lGnSPFXWyJZWzJgZ7igtIkEPBAFWP7dtAqVNzDoV1LG+hYgjQDKpJ1B4cqr7RuWZV7JuLMyFJ08tR+VS2sYTPV4VmbhNp9NP5tO+rLqdHVPTX8Q3Cba2gXVP3LqxUBmzA674GUHQc60T2WXRmDHmBA9KF2Ts51brr0Z4IVR8NsHf4t8qPxRnfU5f4S5ZRvAPcuqil2IVVBLE7gBqTXmmwMZcxe10xKqWBF3KkTFhLLgLBB1OnDe9SdPulAuP+x2WlFb9+w3My6i2OYBAJ7xHCovo2H+Ow5kDKLxls0fAV1jd8Uy2mmvdXjVM4uWVplv0vwariMWymc9/XQCHyoCojeF3TxiqPYtwm5PIFT6gGtR0yxFsYu8oiFbOwXWHZVzA/zZpkDSgdg7IKW8ziGYl2/lG9V8d5PlSTeWND1R2FY5VA+yg9mNa7bL/ulOQHNlE8gw1M1msDh5k+A9pPzrZXZOGPZ0VRv7qk0O3Qbb0VRyRR6KKUmmzoPAfKms1XWiD2IxpJprGkmiAqtoDE3bbCyRaMjtHkd+o+6mLhGsYR1ZSXLK7OJynUCNe6tZfKlxbA0EFoGk8BPDvqDaWGLW3TfmU+vD3rndlk0YLaNjMY5g+pFU+0L8gMeKFT5fn8qubtyFk+HgR+NZ7aKakA6NqO48R99FD1ZVLdILLO8SP6l1qPF4jrBPHj4/nSGZDcVaG8RrPmDS3bIDabnGnifz+dGzdQvZmIkMh3MDHfpBHiNK0fSayBs3BMRNy2+FElCSqtn0VoAAO8+A3zNY0AgZhoQZ7wRxrQPiUubPtCVz/tqyuYlguUsSBuCaD2HCqQZLkhbRRdG8LOIcR8C3GPcQcij3JrcdQHQc49e40D0T2bAu3SPrJjwkn76u7FjTSpyZaCoqrOJe0YMleXFfxFaXA41biggg1V37M799V72XtnMhyn1VvEffS2UaPRMDcUjhRnWDnXnuC6RFNHRh4dofjR6dIc/wqx8RHzp0xXE0+NvgDfWZ2ljS27dIA9ac913+LTuH41E1mXUcta12Bqjxu/hTav3kb4luMPUyD5gg16D9EeG/xVxz9jDsCYUhczrqS274fMSDVT072dGKVwPjAzd5TcfGNPKrPoZj7OHXFtdZBcexksh7L3QxMkjscJyyDHDXSqqXlZzyh4NIK2gQ+MxF5pM3myqxDajsgsVJBAiYHdVrdvrkyA7/AIjxPP7qx2EGVV5KNBzO6aPwV0zmOsaR8lFSlLJSMMGqwViSq8SdfFjWp2jh4suO6sx0WfPd1+ypbvk6ecA1tXgisTk6KFsYggFwCRoDxgUxsdb/AO4vrWg/ZrbfYX0pyYZRJgAeAimjbEbRmbm0bS/FdQaTq3Dn4Ui7QtESLikHcRMH2quXDWb+IuRqC7QMp0XgARuHdVu2x1P2o3aRuoNlvx4NAzxvM8zGnpQeOvkK7g6ZfX9GnYHFC6sqQTxHEdxFV+1cbZt5rTXkFwx2J7SyREjh50vaxGqM70lwy2wRu1Ckd6rq1Yu7iEiC2nA8o7/vrVdI9n4rGYm4UC27QOVCx1aN9zKNe0ZPDhQtj6PQY626zcwqhVP3x51qstDRl7zpEyNe/fQlmWlRqAeyQJ/XCvTsL0QsINUBIESdYA8al/6Ko+EAeAFbqNZ5e+DuvdhBo6y38pA3+Z++rzY3RRwSW3GJGuh7vU16Bg9lou5Y+Z8aOXCAbtKNAtFJYwuRMvIU/D2atL+G0pLFnShRkwG/gZG6g0wROh3d9aVU0qK5hxQ6jKRSjYinfFSWNkAfD61aiyaKw9iKyRmyq/YcgmZoXD2CWJNXmJWdKHtWoO786dISzMdMNim7bzJ8aar48j3GsPhxmmRBUwynep5V7TcsgiDWP2/0alustDtAajg3jQlEMXkyXVExG6igoA8Nw+/vJqwt7MfQNoOJHHu7hUW0ejZudpMQyxuVlBUeEQaTq2UdDtk3O2HVmRxoYJBgndPGvSsHi1ufCwPjow8RXlCYO8hC3oPK7a3jlnQnUd4PlVhg9qX7TDPqAPrE7Q9QZHgaZ+JzzR6qzqo4UK1/MeQ5cD41SbN2mt1AxI14ggiat7QkRBn2o/k/Qn4wa5hwt1ngAsF3eG8eNFC2ahv2YbNrosHkeI9KLt4kEA9rUc6XZRMqHxVy4dItryTQnxbeaznTDDi2iPzcg88wGYH51q7Vus79IjZcLbMT+/gDjrbfUeAB576Mo3EXkSUXRZ7Awwu2LNwky1sHf5fdVjcwcbnYec1VdDXnA4fmFdT5XHq5Zpp4Kohg24oHAI0Jpqxzp7Gh3OtaylBiLUyrQVu6RUou1rA0S3k0qK2tON6lBFYFEtlJqV7NJg99GlKyQGyuNuKkG6nXhwrmSBR6hsHy00LrUrGKZOtMCiQVE4pGemtNANA1y2DyqH/p6nfNEsIqS2tYJDb2dbA0FZfpXhrS3bWoQkZpHEK4BHnuraRWD+kpe3h4+Io3u4A+RpOVXEnyepo7eFhdBE0ZgMWVYK5AWNDrv7+6p0twAOQA8YAE+1R38NPGlUKiNHQVjroUZiRABM8IAmiNkfUW82hyLI5SJis7ibHZKNJtkqXSYDhTOXumre3fQgEXQByaZHcaFGaHrbrMfSTb/wALb/8AkD3tXK2mUVjPpQaMNZHA3yfHLaeJ03SflVZLBPkeA7ocv+Cs+D/3tFWh30B0VgYLDwCAUJAO+CzGjn30I6H4vUV6Hy1NSqJpqHGqJqRLM1LbtinXLeXUVqQLIHsRUQtmpS5qWzrS0GyWwhWp2vU24s1H1dGmtAGkyafek7uFKLdKFoqwAVwGk3ijryCKFy1qGsjtDnT3FcVpCaICNkp1paUGnqawGSolYD6Ul/e2P8puPNz+HvXoNs15/wDSn9dY5dUf7z8vv7qWeiXI8G8Ree+Bu8BT3t1Kg3TvgE+JAmnuQBTxWAp4KvEWqrmw+tW2Jed1CMKnJFYllaesd9LLxh8PzN5yP/yYE+++tYlYz6VWlcMvLrmPHTsDdxNGXqS5dGi2EIwuHG4CwnyqcmocEMtm0omBaQCTJ+EbzJk+Zp80qlgfj9UPU1OlDpU4rWUolJpC9MDUpprFoYwqS2NaRRUk1kg2E22qWKCV6n6ymEaJwopYFQC7TutpkCmdeWagy1Iz0zNQYUMK0wpUxNRM1AyI2WkpSaQ0GMSI1effSYZxFoceqUDmQXYlfP8ACt4DWB6fPmxllZjs2RpM9q42v/FJN4I8qwemvp7ewAoa/cp165JPiaGummTwPGJBcuVHmpGGtdFLZUPVtKwf0i3c1/CLBJy3DAEyM6A8DJ3aVs7t/KpNefdMnz4nCydAjg9+a4oI7uGv/BVvBLlXibizdnlpy3DTdU4NVtgwSORj00o1DQg8FILxQStOBqANSh6YYIrqjV6cDRAS04LUQNT22ooU5VqQip0UVMLdOhXIANcCaPayKb1YFajdgKKSaIvMAKr7uKoNhSJWuVGblCNdmmzU+wyiGZqQmoJrg1GzUSzWC6aE/t1kDT6k9+j+1bmaw/TAf42yd4PVDw7Qndu4UsiPKsG8N3U+J+dIXoQvv8TSG/RsrFYJ3pmaoOupc1LY4PtbERlHc7eMQq+5rI9IhGMwiDU5V0MwTnJ4a8OfCK6uofCfL6GowrfM/M0aprq6tFYHjokUU4ClrqLCPWpBXV1Ew4GnK9dXUQBmHejgYrq6qQJSI2vULiMVApa6s2aKKa/iyx7qRBXV1S+l6H5KVVrq6tQB+SuK11dRARsaxvS1c2Iw50+tUepB/X311dSTI8ujSYu9En9b6Au4onQeZrq6mKx0G4VTGtEdVXV1Kxj/2Q==" alt="Profile"></div>
+    <div class="profile-info">
+      <h1 id="nameText">Taylor Swift</h1>
+      <p><strong>Age:</strong> <span id="ageText">35</span></p>
+      <p><strong>Location:</strong> <span id="locationText">Bugo, Cagayan de Oro</span></p>
+      <p><strong>Occupation:</strong> <span id="occupationText">Singer</span></p>
+      <p><strong>Email:</strong> <span id="emailText">taylorswift@gmail.com</span></p>
     </div>
-
-    <div class="profile-row">
-      <div class="avatar" id="profileAvatar">
-        <div id="avatarInitials">JD</div>
-        <button class="edit-av" id="editAvatarBtn">Edit</button>
-      </div>
-
-      <div class="profile-meta">
-        <h1 id="profName" contenteditable="true">Juan Dela Cruz</h1>
-        <p id="profHandle" contenteditable="true" class="muted">@juandelacruz</p>
-        <p id="profBio" contenteditable="true" class="muted">Developer • coffee enthusiast • building for the web</p>
-      </div>
-
-      <div class="profile-actions">
-        <button class="btn">Follow</button>
-        <button class="btn">Message</button>
-      </div>
-    </div>
+    <div class="edit-profile"><a id="editBtn">Edit Profile ✏️</a></div>
   </div>
 
-  <!-- LAYOUT -->
-  <div class="layout">
+  <!-- ACCOUNT TYPE -->
+  <div class="account-box" style="width:80%; margin:auto;">
+    <p><strong>Account Type:</strong></p>
+    <div class="account-type" style="background:#fff; width:260px; padding:12px; border-radius:8px; border:2px solid #c9c9c9;">Event Creator</div>
+  </div>
 
-    <!-- LEFT COLUMN -->
-    <aside>
-      <div class="card">
-        <h3>Profile</h3>
-        <div class="info-row"><strong id="displayName">Juan Dela Cruz</strong><span class="muted">•</span><span id="displayHandle" class="muted">@juandelacruz</span></div>
-        <div class="info-row muted" id="displayBio">Developer • coffee enthusiast • building for the web</div>
-        <hr style="border:none;border-top:1px solid var(--border);margin:10px 0">
-        <div class="info-row"><strong class="muted">Location</strong><div class="muted">Manila, Philippines</div></div>
-        <div class="info-row"><strong class="muted">Website</strong><div class="muted">example.com</div></div>
-      </div>
+  <!-- EVENTS -->
+  <div class="event-card">
+    <h2>My Events</h2>
+    <table id="eventsTable">
+      <thead>
+        <tr><th>Event Name</th><th>Location</th><th>ID</th><th>Date Created</th><th>Event Date</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <div class="create-btn"><button id="openWizardBtn">Create an Event</button></div>
+  </div>
 
-      <div class="card" style="margin-top:12px">
-        <h3>Stats</h3>
-        <div class="info-row"><div><strong id="statFollowing">120</strong><div class="small muted">Following</div></div><div style="margin-left:16px"><strong id="statFollowers">980</strong><div class="small muted">Followers</div></div></div>
-      </div>
-    </aside>
+  <!-- MAIN MAP -->
+  <h2 style="text-align:center; color:#0f4c86;">📍 My Event Map (Bugo Trinitas)</h2>
+  <div id="map"></div>
 
-    <!-- RIGHT: FEED -->
-    <main>
-      <!-- COMPOSE -->
-      <div class="compose card" id="composeCard">
-        <div style="display:flex;gap:12px;width:100%">
-          <div style="width:46px;height:46px;border-radius:50%;background:#ccc;background-size:cover;background-position:center" id="composeAvatar"></div>
-          <div style="flex:1">
-            <textarea id="composeText" placeholder="What's happening?" maxlength="1000"></textarea>
-            <div class="image-preview" id="composePreview"></div>
-            <div class="controls" style="margin-top:8px">
-              <div>
-                <button class="icon-btn" id="addImageBtn">🖼️ Add images</button>
-                <input type="file" id="composeImageInput" accept="image/*" multiple style="display:none">
-              </div>
-              <div>
-                <button class="post-btn" id="postCreateBtn">Post</button>
-              </div>
+  <!-- Footer -->
+  <footer>
+    <div class="footer-section">
+      <p class="footer-title">Socials:</p>
+      <div class="social-icons"><i class="fab fa-facebook"></i><i class="fab fa-twitter"></i><i class="fab fa-instagram"></i></div>
+    </div>
+    <div class="footer-section">
+      <p class="footer-title">Company:</p>
+      <p>About Us</p><p>Contact Us</p><p>Career</p>
+    </div>
+    <div class="footer-section">
+      <p class="footer-title">Further Information:</p>
+      <p>Terms and Policies</p><p>Privacy and Safety</p>
+    </div>
+  </footer>
+</div>
+
+<!-- WIZARD FULL-PAGE (Option B style) -->
+<div id="wizardPage" class="wizard-page">
+  <div class="wizard-top">
+    <div id="backBtn" class="wizard-back" title="Back to profile"><i class="fas fa-arrow-left"></i></div>
+    <div class="wizard-title">Create an Event</div>
+  </div>
+
+  <div class="wizard-body">
+    <div class="wizard-card-wrap">
+      <div class="wizard-card" id="step1">
+        <div class="wizard-step-title">Basic Informations</div>
+
+        <div class="field">
+          <label>Event Name:</label>
+          <input type="text" id="evt_name" placeholder="Event name">
+        </div>
+
+        <div class="field">
+          <label>Description:</label>
+          <textarea id="evt_desc" rows="3" placeholder="Short description"></textarea>
+        </div>
+
+        <div class="two-col">
+          <div class="col field">
+            <label>Category:</label>
+            <select id="evt_category"><option>Events</option><option>Sports</option><option>Music</option></select>
+          </div>
+          <div class="col field">
+            <label>Upload Image:</label>
+            <div style="display:flex; gap:10px; align-items:center;">
+              <input type="file" id="evt_image" accept="image/*">
+              <img id="imgPreview" class="img-preview" alt="preview" style="display:none;">
             </div>
           </div>
         </div>
+
+        <div class="wizard-actions">
+          <div class="left"></div>
+          <div>
+            <button id="toStep2">Next ➜</button>
+          </div>
+        </div>
       </div>
 
-      <!-- FEED -->
-      <div class="feed" id="feed"></div>
-    </main>
+      <div class="wizard-card" id="step2" style="display:none;">
+        <div class="wizard-step-title">Schedule and Location</div>
 
+        <div class="field">
+          <label>Location name (eg. Phase 1 Basketball Court):</label>
+          <input type="text" id="evt_locname" placeholder="Location name or address">
+        </div>
+
+        <div class="field">
+          <label>Date:</label>
+          <input type="date" id="evt_date">
+        </div>
+
+        <div class="two-col">
+          <div class="col field">
+            <label>Start Time:</label>
+            <input type="time" id="evt_start">
+          </div>
+          <div class="col field">
+            <label>End Time:</label>
+            <input type="time" id="evt_end">
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Pick location on map (click to place marker):</label>
+          <div id="wizardMap"></div>
+        </div>
+
+        <div class="wizard-actions">
+          <div class="left"><button id="backTo1" style="background:#fff;color:var(--primary); border:1px solid #d9e6f0;">◂ Back</button></div>
+          <div><button id="toStep3">Next ➜</button></div>
+        </div>
+      </div>
+
+      <div class="wizard-card" id="step3" style="display:none;">
+        <div class="wizard-step-title">Organizer Information</div>
+
+        <div class="field">
+          <label>Name:</label>
+          <input type="text" id="org_name" placeholder="Organizer name">
+        </div>
+        <div class="field">
+          <label>Contact Number:</label>
+          <input type="text" id="org_contact" placeholder="Contact number">
+        </div>
+        <div class="field">
+          <label>Address:</label>
+          <input type="text" id="org_address" placeholder="Organizer address">
+        </div>
+
+        <div class="wizard-actions">
+          <div class="left"><button id="backTo2" style="background:#fff;color:var(--primary); border:1px solid #d9e6f0;">◂ Back</button></div>
+          <div><button id="submitEvent">Create Event</button></div>
+        </div>
+      </div>
+
+    </div>
   </div>
 </div>
 
-<!-- Hidden inputs -->
-<input type="file" id="avatarInput" accept="image/*" style="display:none">
-<input type="file" id="bannerInput" accept="image/*" style="display:none">
-
-<!-- Modals (edit post and comments) -->
-<div id="modalRoot" style="display:none"></div>
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
-/* -------------------- Utilities -------------------- */
-const qs = s => document.querySelector(s);
-const qsa = s => Array.from(document.querySelectorAll(s));
-const uid = ()=> 'id_' + Math.random().toString(36).slice(2,9);
+/* ----------------- Helper: localStorage events ----------------- */
+const EVENTS_KEY = 'hanapgimik_events';
 
-/* -------------------- Local Storage Keys -------------------- */
-const LS_PROFILE = 'x_demo_profile_v1';
-const LS_POSTS = 'x_demo_posts_v1';
-
-/* -------------------- Default Data -------------------- */
-const defaultProfile = {
-  name: "Juan Dela Cruz",
-  handle: "@juandelacruz",
-  bio: "Developer • coffee enthusiast • building for the web",
-  avatarDataUrl: null,
-  bannerDataUrl: null,
-  location: "Manila, Philippines",
-  website: "example.com",
-  following:120,
-  followers:980
-};
-
-/* -------------------- State -------------------- */
-let profile = loadProfile();
-let posts = loadPosts(); // array of post objects
-
-/* -------------------- Profile load/save -------------------- */
-function loadProfile(){
-  try{
-    const raw = localStorage.getItem(LS_PROFILE);
-    if(raw) return JSON.parse(raw);
-  }catch(e){}
-  localStorage.setItem(LS_PROFILE, JSON.stringify(defaultProfile));
-  return {...defaultProfile};
+function loadEvents() {
+  const raw = localStorage.getItem(EVENTS_KEY);
+  return raw ? JSON.parse(raw) : [];
 }
 
-function saveProfile(){
-  localStorage.setItem(LS_PROFILE, JSON.stringify(profile));
-  renderProfile();
+function saveEvents(events) {
+  localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
 }
 
-/* -------------------- Posts load/save -------------------- */
-function loadPosts(){
-  try{
-    const raw = localStorage.getItem(LS_POSTS);
-    if(raw) return JSON.parse(raw);
-  }catch(e){}
-  // seed with 2 sample posts
-  const now = Date.now();
-  const seed = [
-    {
-      id: uid(), authorName: profile.name, handle: profile.handle,
-      avatar: profile.avatarDataUrl, text: "Excited to share this X-style profile demo — built with plain HTML/CSS/JS!",
-      images: [], likes: 12, retweets: 4, comments: 2, createdAt: now - 1000*60*60*5, liked:false, retweeted:false
-    },
-    {
-      id: uid(), authorName: profile.name, handle: profile.handle,
-      avatar: profile.avatarDataUrl, text: "Coffee + code = ❤️",
-      images: [], likes: 42, retweets: 10, comments: 6, createdAt: now - 1000*60*60*28, liked:false, retweeted:false
-    }
-  ];
-  localStorage.setItem(LS_POSTS, JSON.stringify(seed));
-  return seed;
-}
+/* ----------------- Main Map (profile page) ----------------- */
+const mainMap = L.map('map').setView([8.5046, 124.7683], 16);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{ maxZoom:19 }).addTo(mainMap);
+const mainMarkers = L.layerGroup().addTo(mainMap);
 
-function savePosts(){
-  localStorage.setItem(LS_POSTS, JSON.stringify(posts));
-}
-
-/* -------------------- Render Profile -------------------- */
-function renderProfile(){
-  // banner
-  const bannerEl = qs('#banner');
-  if(profile.bannerDataUrl) bannerEl.style.backgroundImage = `url(${profile.bannerDataUrl})`;
-  else bannerEl.style.backgroundImage = '';
-
-  // avatar
-  const avatarEl = qs('#profileAvatar');
-  if(profile.avatarDataUrl) {
-    avatarEl.style.backgroundImage = `url(${profile.avatarDataUrl})`;
-    qs('#avatarInitials').style.display = 'none';
-  } else {
-    avatarEl.style.backgroundImage = '';
-    qs('#avatarInitials').style.display = 'block';
-    qs('#avatarInitials').textContent = getInitials(profile.name);
-  }
-
-  // text fields
-  qs('#profName').innerText = profile.name;
-  qs('#profHandle').innerText = profile.handle;
-  qs('#profBio').innerText = profile.bio;
-  qs('#displayName').innerText = profile.name;
-  qs('#displayHandle').innerText = profile.handle;
-  qs('#displayBio').innerText = profile.bio;
-  qs('#statFollowing').innerText = profile.following;
-  qs('#statFollowers').innerText = profile.followers;
-
-  // compose avatar
-  const composeAvatar = qs('#composeAvatar');
-  if(profile.avatarDataUrl) composeAvatar.style.backgroundImage = `url(${profile.avatarDataUrl})`;
-  else {
-    composeAvatar.style.backgroundImage = '';
-    composeAvatar.textContent = getInitials(profile.name);
-  }
-}
-
-/* -------------------- Helpers -------------------- */
-function getInitials(name){
-  if(!name) return '';
-  const parts = name.trim().split(/\s+/);
-  if(parts.length === 1) return parts[0].slice(0,2).toUpperCase();
-  return (parts[0][0] + parts[1][0]).toUpperCase();
-}
-
-function timeAgo(ts){
-  const s = Math.floor((Date.now() - ts)/1000);
-  if(s < 60) return s + 's';
-  const m = Math.floor(s/60);
-  if(m < 60) return m + 'm';
-  const h = Math.floor(m/60);
-  if(h < 24) return h + 'h';
-  const d = Math.floor(h/24);
-  if(d < 7) return d + 'd';
-  return new Date(ts).toLocaleDateString();
-}
-
-/* -------------------- Render Feed -------------------- */
-function renderFeed(){
-  const feed = qs('#feed');
-  feed.innerHTML = '';
-  // newest first
-  posts.slice().reverse().forEach(post => feed.appendChild(renderPostEl(post)));
-}
-
-function renderPostEl(p){
-  const wrap = document.createElement('div'); wrap.className = 'post';
-  // head
-  const head = document.createElement('div'); head.className = 'head';
-  const avatar = document.createElement('div'); avatar.className = 'p-avatar';
-  if(p.avatar) avatar.style.backgroundImage = `url(${p.avatar})`; else avatar.textContent = getInitials(p.authorName);
-  const meta = document.createElement('div'); meta.className = 'meta';
-  const who = document.createElement('div'); who.className = 'who'; who.textContent = p.authorName + ' ';
-  const when = document.createElement('div'); when.className = 'when'; when.textContent = timeAgo(p.createdAt) + ' · ' + p.handle;
-  const text = document.createElement('div'); text.className = 'text'; text.textContent = p.text;
-
-  meta.appendChild(who); meta.appendChild(when);
-  head.appendChild(avatar); head.appendChild(meta);
-
-  // media
-  const mediaWrap = document.createElement('div'); mediaWrap.className = 'media';
-  if(p.images && p.images.length > 0){
-    const n = p.images.length;
-    // simple grid logic
-    if(n === 1) mediaWrap.classList.add('grid-1');
-    if(n === 2) mediaWrap.classList.add('grid-2');
-    if(n === 3) mediaWrap.classList.add('grid-3');
-    if(n >= 4) mediaWrap.classList.add('grid-2'); // show 4 in 2x2 grid
-    // create images
-    p.images.slice(0,4).forEach(src=>{
-      const img = document.createElement('img');
-      img.src = src;
-      mediaWrap.appendChild(img);
-    });
-  }
-
-  // actions
-  const actions = document.createElement('div'); actions.className = 'actions';
-  // comment
-  const actComment = document.createElement('div'); actComment.className = 'action comment';
-  actComment.innerHTML = `💬 <span class="small">${p.comments}</span>`;
-  actComment.onclick = ()=> openCommentsModal(p.id);
-  // retweet
-  const actRetweet = document.createElement('div'); actRetweet.className = 'action retweet';
-  if(p.retweeted) actRetweet.classList.add('active');
-  actRetweet.innerHTML = `🔁 <span class="small">${p.retweets}</span>`;
-  actRetweet.onclick = ()=> toggleRetweet(p.id);
-  // like
-  const actLike = document.createElement('div'); actLike.className = 'action like';
-  if(p.liked) actLike.classList.add('active');
-  actLike.innerHTML = `❤ <span class="small">${p.likes}</span>`;
-  actLike.onclick = ()=> toggleLike(p.id);
-  // share
-  const actShare = document.createElement('div'); actShare.className = 'action share';
-  actShare.innerHTML = `🔗 <span class="small">Share</span>`;
-  actShare.onclick = ()=> sharePost(p.id);
-  // edit
-  const actEdit = document.createElement('div'); actEdit.className = 'action';
-  actEdit.innerHTML = `✏️ <span class="small">Edit</span>`;
-  actEdit.onclick = ()=> openEditModal(p.id);
-  // delete
-  const actDelete = document.createElement('div'); actDelete.className = 'action';
-  actDelete.innerHTML = `🗑️ <span class="small danger">Delete</span>`;
-  actDelete.onclick = ()=> deletePost(p.id);
-
-  actions.appendChild(actComment);
-  actions.appendChild(actRetweet);
-  actions.appendChild(actLike);
-  actions.appendChild(actShare);
-  actions.appendChild(actEdit);
-  actions.appendChild(actDelete);
-
-  // assemble
-  wrap.appendChild(head);
-  wrap.appendChild(text);
-  if(mediaWrap.children.length) wrap.appendChild(mediaWrap);
-  wrap.appendChild(actions);
-
-  return wrap;
-}
-
-/* -------------------- Post Actions -------------------- */
-function toggleLike(id){
-  const p = posts.find(x=>x.id===id);
-  if(!p) return;
-  p.liked = !p.liked;
-  p.likes += p.liked ? 1 : -1;
-  savePosts(); renderFeed();
-}
-function toggleRetweet(id){
-  const p = posts.find(x=>x.id===id);
-  if(!p) return;
-  p.retweeted = !p.retweeted;
-  p.retweets += p.retweeted ? 1 : -1;
-  savePosts(); renderFeed();
-}
-function sharePost(id){
-  // simulate copy link
-  const url = location.href + '#post-' + id;
-  navigator.clipboard?.writeText(url).then(()=>{
-    alert('Post link copied to clipboard (simulated).');
-  }).catch(()=>{ alert('Copy not available. URL:\n' + url); });
-}
-function deletePost(id){
-  if(!confirm('Delete this post?')) return;
-  posts = posts.filter(x=>x.id!==id);
-  savePosts(); renderFeed();
-}
-
-/* -------------------- Comments (quick) -------------------- */
-function openCommentsModal(postId){
-  const p = posts.find(x=>x.id===postId);
-  if(!p) return;
-  const modalRoot = qs('#modalRoot');
-  modalRoot.style.display = 'block';
-  modalRoot.innerHTML = `
-    <div class="modal-backdrop" id="backdrop">
-      <div class="modal">
-        <h3>Comments — ${p.comments}</h3>
-        <div style="margin:10px 0;">
-          <textarea id="commentText" placeholder="Write a comment..." style="width:100%;min-height:80px;padding:8px;border:1px solid ${getComputedStyle(document.body).getPropertyValue('--border')};border-radius:8px"></textarea>
-        </div>
-        <div style="display:flex;justify-content:flex-end;gap:8px">
-          <button id="cancelComment" class="btn">Cancel</button>
-          <button id="postComment" class="btn primary">Post comment</button>
-        </div>
-      </div>
-    </div>
+function addMarkerToMainMap(lat, lng, title, note, imageDataUrl) {
+  const popup = `
+    <b>${title}</b><br>
+    <div style="min-height:40px;">${note || '<i>No description</i>'}</div>
+    ${imageDataUrl ? `<br><img src="${imageDataUrl}" style="width:140px;border-radius:6px;margin-top:6px;">` : ''}
   `;
-  qs('#cancelComment').onclick = ()=> { modalRoot.style.display='none'; modalRoot.innerHTML=''; }
-  qs('#postComment').onclick = ()=>{
-    const txt = qs('#commentText').value.trim();
-    if(!txt){ alert('Write something'); return; }
-    p.comments += 1;
-    savePosts(); renderFeed();
-    modalRoot.style.display='none'; modalRoot.innerHTML='';
-  };
+  L.marker([lat, lng]).addTo(mainMarkers).bindPopup(popup);
 }
 
-/* -------------------- Edit Post Modal -------------------- */
-function openEditModal(postId){
-  const p = posts.find(x=>x.id===postId);
-  if(!p) return;
-  const modalRoot = qs('#modalRoot');
-  modalRoot.style.display = 'block';
-  modalRoot.innerHTML = `
-    <div class="modal-backdrop">
-      <div class="modal">
-        <h3>Edit Post</h3>
-        <textarea id="editText" style="width:100%;min-height:100px;padding:8px;border:1px solid ${getComputedStyle(document.body).getPropertyValue('--border')};border-radius:8px">${p.text.replaceAll('&','&amp;')}</textarea>
-        <div style="margin-top:8px"><strong>Images</strong></div>
-        <div id="editPreview" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"></div>
-        <div style="margin-top:8px;display:flex;justify-content:space-between;align-items:center">
-          <div>
-            <button id="addEditImage" class="icon-btn">🖼️ Add/Replace</button>
-            <input type="file" id="editImageInput" accept="image/*" multiple style="display:none">
-          </div>
-          <div>
-            <button id="cancelEdit" class="btn">Cancel</button>
-            <button id="saveEdit" class="btn primary">Save</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  `;
-  const editPreview = qs('#editPreview');
-  // show current images
-  p.images.forEach((src, idx)=>{
-    const img = document.createElement('img'); img.src = src; img.style.width='120px'; img.style.height='80px'; img.style.objectFit='cover'; img.style.borderRadius='8px';
-    const del = document.createElement('button'); del.textContent='✖'; del.style.marginLeft='6px';
-    del.onclick = ()=> {
-      p.images.splice(idx,1); openEditModal(postId); // reopen modal to refresh preview
-    };
-    const wrap = document.createElement('div'); wrap.style.display='flex';wrap.style.alignItems='center';
-    wrap.appendChild(img); wrap.appendChild(del);
-    editPreview.appendChild(wrap);
+/* populate events table from storage and add markers */
+function refreshEventsUI() {
+  const events = loadEvents();
+  const tbody = document.querySelector('#eventsTable tbody');
+  tbody.innerHTML = '';
+  events.forEach(ev => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${escapeHtml(ev.name)}</td>
+      <td>${escapeHtml(ev.locationName || (ev.lat+','+ev.lng))}</td>
+      <td>${ev.id}</td>
+      <td>${new Date(ev.createdAt).toLocaleString()}</td>
+      <td>${ev.date || ''}</td>
+    `;
+    tbody.prepend(tr); // newest first
   });
 
-  qs('#addEditImage').onclick = ()=> qs('#editImageInput').click();
-  qs('#editImageInput').onchange = function(){
-    const files = Array.from(this.files).slice(0,4 - p.images.length);
-    if(files.length===0) return;
-    let loaded=0;
-    files.forEach(file=>{
-      const reader = new FileReader();
-      reader.onload = e=>{
-        p.images.push(e.target.result);
-        loaded++;
-        if(loaded === files.length) openEditModal(postId); // refresh modal
-      };
-      reader.readAsDataURL(file);
-    });
-  };
-
-  qs('#cancelEdit').onclick = ()=> { modalRoot.style.display='none'; modalRoot.innerHTML=''; }
-  qs('#saveEdit').onclick = ()=>{
-    const newText = qs('#editText').value.trim();
-    p.text = newText;
-    savePosts(); renderFeed();
-    modalRoot.style.display='none'; modalRoot.innerHTML='';
-  };
-}
-
-/* -------------------- Create Post -------------------- */
-const composeText = qs('#composeText');
-const composePreview = qs('#composePreview');
-const composeImageInput = qs('#composeImageInput');
-const addImageBtn = qs('#addImageBtn');
-
-let composeImages = []; // data urls
-
-addImageBtn.onclick = ()=> composeImageInput.click();
-composeImageInput.onchange = function(){
-  const files = Array.from(this.files).slice(0,4 - composeImages.length);
-  if(files.length === 0) return;
-  files.forEach(file=>{
-    const reader = new FileReader();
-    reader.onload = e => {
-      composeImages.push(e.target.result);
-      renderComposePreview();
-    };
-    reader.readAsDataURL(file);
-  });
-  // reset input
-  this.value = '';
-};
-
-function renderComposePreview(){
-  composePreview.innerHTML = '';
-  composeImages.forEach((src, idx)=>{
-    const img = document.createElement('img'); img.src = src;
-    img.style.width='120px'; img.style.height='80px'; img.style.objectFit='cover'; img.style.borderRadius='8px';
-    const del = document.createElement('button'); del.textContent='✖'; del.style.marginLeft='6px';
-    del.onclick = ()=> { composeImages.splice(idx,1); renderComposePreview(); };
-    const wrap = document.createElement('div'); wrap.style.display='flex';wrap.style.alignItems='center';
-    wrap.appendChild(img); wrap.appendChild(del);
-    composePreview.appendChild(wrap);
+  // clear main markers then re-add
+  mainMarkers.clearLayers();
+  events.forEach(ev => {
+    if (ev.lat && ev.lng) addMarkerToMainMap(ev.lat, ev.lng, ev.name, ev.description, ev.imageDataUrl);
   });
 }
 
-qs('#postCreateBtn').onclick = ()=>{
-  const txt = composeText.value.trim();
-  if(!txt && composeImages.length === 0){ alert('Write something or add an image.'); return; }
-  const newPost = {
-    id: uid(),
-    authorName: profile.name,
-    handle: profile.handle,
-    avatar: profile.avatarDataUrl,
-    text: txt,
-    images: composeImages.slice(0,4),
-    likes: 0, liked:false,
-    retweets:0, retweeted:false,
-    comments:0,
-    createdAt: Date.now()
-  };
-  posts.push(newPost);
-  savePosts();
-  renderFeed();
-  // reset composer
-  composeText.value = '';
-  composeImages = [];
-  renderComposePreview();
-};
+/* basic HTML-escape helper */
+function escapeHtml(s){ if(!s) return ''; return s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
 
-/* -------------------- Edit Profile (avatar/banner and contenteditable saves) -------------------- */
-// avatar
-qs('#editAvatarBtn').onclick = ()=> qs('#avatarInput').click();
-qs('#avatarInput').onchange = function(){
-  const file = this.files[0]; if(!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    profile.avatarDataUrl = e.target.result;
-    saveProfile();
-    // update existing posts authored by user (optional: keep existing avatars)
-    posts.forEach(p=>{ if(p.handle === profile.handle) p.avatar = profile.avatarDataUrl; });
-    savePosts(); renderFeed();
-  };
-  reader.readAsDataURL(file);
-};
+/* initial load */
+refreshEventsUI();
 
-// banner
-qs('#editBannerBtn').onclick = ()=> qs('#bannerInput').click();
-qs('#bannerInput').onchange = function(){
-  const file = this.files[0]; if(!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    profile.bannerDataUrl = e.target.result;
-    saveProfile();
-  };
-  reader.readAsDataURL(file);
-};
+/* ----------------- Wizard view logic (Option B: separate full page) ----------------- */
+const profileView = document.getElementById('profileView');
+const wizardPage = document.getElementById('wizardPage');
+const openWizardBtn = document.getElementById('openWizardBtn');
+const backBtn = document.getElementById('backBtn');
 
-// contenteditable autosave
-[['#profName','name'], ['#profHandle','handle'], ['#profBio','bio']].forEach(([sel, key])=>{
-  const el = qs(sel);
-  el.addEventListener('input', () => {
-    profile[key] = el.innerText;
-    saveProfile();
-  });
+openWizardBtn.addEventListener('click', () => {
+  profileView.style.display = 'none';
+  wizardPage.style.display = 'block';
+  // center scroll top
+  window.scrollTo({ top: 0 });
 });
 
-/* -------------------- Init Render -------------------- */
-function init(){
-  renderProfile();
-  renderFeed();
-  // reflect profile to left column after editing
-  ['profName','profHandle','profBio'].forEach(id=>{
-    qs('#'+id).addEventListener('input', ()=>{
-      qs('#displayName').innerText = qs('#profName').innerText;
-      qs('#displayHandle').innerText = qs('#profHandle').innerText;
-      qs('#displayBio').innerText = qs('#profBio').innerText;
-    });
-  });
-}
-init();
-
-/* -------------------- Save posts helper -------------------- */
-function savePosts(){ localStorage.setItem(LS_POSTS, JSON.stringify(posts)); }
-
-/* -------------------- Save profile helper exported earlier -------------------- */
-function saveProfile(){ localStorage.setItem(LS_PROFILE, JSON.stringify(profile)); renderProfile(); }
-
-/* -------------------- Keyboard shortcuts / niceties -------------------- */
-document.addEventListener('keydown', (e)=>{
-  if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k'){ // focus compose
-    e.preventDefault(); qs('#composeText').focus();
-  }
+backBtn.addEventListener('click', () => {
+  wizardPage.style.display = 'none';
+  profileView.style.display = 'block';
 });
 
-/* -------------------- End of script -------------------- */
+/* Step navigation */
+const step1El = document.getElementById('step1');
+const step2El = document.getElementById('step2');
+const step3El = document.getElementById('step3');
+document.getElementById('toStep2').addEventListener('click', () => {
+  // simple validation: name required
+  if (!document.getElementById('evt_name').value.trim()) { alert('Please enter event name.'); return; }
+  step1El.style.display='none'; step2El.style.display='block'; step3El.style.display='none';
+});
+document.getElementById('backTo1').addEventListener('click', () => { step1El.style.display='block'; step2El.style.display='none'; });
+document.getElementById('toStep3').addEventListener('click', () => {
+  if (!document.getElementById('evt_date').value) { alert('Please pick a date.'); return; }
+  step1El.style.display='none'; step2El.style.display='none'; step3El.style.display='block';
+});
+document.getElementById('backTo2').addEventListener('click', () => { step1El.style.display='none'; step2El.style.display='block'; step3El.style.display='none'; });
+
+/* ----------------- Wizard mini-map (pick lat/lng) ----------------- */
+const wizardMap = L.map('wizardMap', { attributionControl:false }).setView([8.5046,124.7683], 16);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{ maxZoom:19 }).addTo(wizardMap);
+let wizardMarker = null;
+wizardMap.on('click', (e) => {
+  if (wizardMarker) wizardMap.removeLayer(wizardMarker);
+  wizardMarker = L.marker(e.latlng, {draggable:true}).addTo(wizardMap);
+});
+
+/* allow user to click on main map to add marker too (optional) */
+mainMap.on('click', (e) => {
+  // quick create marker on main map (creates editableMarker) - keep main view lightweight
+  L.popup().setLatLng(e.latlng).setContent('Click Create Event to register this location in a new event.').openOn(mainMap);
+});
+
+/* ----------------- Image preview on select ----------------- */
+const evtImageInput = document.getElementById('evt_image');
+const imgPreview = document.getElementById('imgPreview');
+evtImageInput.addEventListener('change', () => {
+  const f = evtImageInput.files[0];
+  if (!f) { imgPreview.style.display='none'; imgPreview.src=''; return; }
+  const r = new FileReader();
+  r.onload = () => { imgPreview.src = r.result; imgPreview.style.display='block'; };
+  r.readAsDataURL(f);
+});
+
+/* ----------------- Submit event (assemble data, save to storage, update UI) ----------------- */
+document.getElementById('submitEvent').addEventListener('click', async () => {
+  const name = document.getElementById('evt_name').value.trim();
+  const description = document.getElementById('evt_desc').value.trim();
+  const category = document.getElementById('evt_category').value;
+  const imageFile = evtImageInput.files[0] || null;
+  const locationName = document.getElementById('evt_locname').value.trim();
+  const date = document.getElementById('evt_date').value;
+  const start = document.getElementById('evt_start').value;
+  const end = document.getElementById('evt_end').value;
+  const orgName = document.getElementById('org_name').value.trim();
+  const orgContact = document.getElementById('org_contact').value.trim();
+  const orgAddress = document.getElementById('org_address').value.trim();
+
+  // require at least a lat/lng selection or location name
+  let lat = null, lng = null;
+  if (wizardMarker) { const latlng = wizardMarker.getLatLng(); lat = latlng.lat; lng = latlng.lng; }
+  if (!locationName && (!lat || !lng)) { alert('Please enter a location name or pick location on the map.'); return; }
+
+  // read image as dataURL (if present)
+  async function readFileAsDataURL(file) {
+    return new Promise((res, rej) => {
+      if (!file) return res(null);
+      const r = new FileReader();
+      r.onload = () => res(r.result);
+      r.onerror = () => rej('file read error');
+      r.readAsDataURL(file);
+    });
+  }
+
+  const imageDataUrl = await readFileAsDataURL(imageFile);
+
+  // create event object
+  const ev = {
+    id: 'EVT-' + Date.now().toString(36).toUpperCase().slice(-8),
+    name, description, category,
+    locationName, date, start, end,
+    lat, lng,
+    imageDataUrl,
+    organizer: { name: orgName, contact: orgContact, address: orgAddress },
+    createdAt: new Date().toISOString()
+  };
+
+  // save to storage (prepend newest)
+  const events = loadEvents();
+  events.unshift(ev);
+  saveEvents(events);
+
+  // update UI (table + main map)
+  refreshEventsUI();
+
+  // success feedback
+  alert('Event created successfully!');
+
+  // clear wizard inputs (optional)
+  document.getElementById('evt_name').value=''; document.getElementById('evt_desc').value=''; document.getElementById('evt_category').selectedIndex=0;
+  evtImageInput.value=''; imgPreview.style.display='none'; document.getElementById('evt_locname').value=''; document.getElementById('evt_date').value='';
+  document.getElementById('evt_start').value=''; document.getElementById('evt_end').value=''; document.getElementById('org_name').value='';
+  document.getElementById('org_contact').value=''; document.getElementById('org_address').value='';
+
+  // close wizard and go back to profile view
+  wizardPage.style.display='none';
+  profileView.style.display='block';
+
+  // optional: center main map on created event marker
+  if (ev.lat && ev.lng) mainMap.setView([ev.lat, ev.lng], 16);
+});
+
+/* ----------------- small: Edit profile modal actions (reuse earlier) ----------------- */
+const modal = document.createElement('div'); // lightweight in-page modal not visible; we will reuse the earlier modal behavior by quick prompt
+// For simplicity, reuse prompts for editing
+document.getElementById('editBtn').addEventListener('click', () => {
+  const newName = prompt('Full name:', document.getElementById('nameText').innerText);
+  if (newName) document.getElementById('nameText').innerText = newName;
+  const newAge = prompt('Age:', document.getElementById('ageText').innerText);
+  if (newAge) document.getElementById('ageText').innerText = newAge;
+});
+
+/* ----------------- On first load: add any stored events markers (done in refreshEventsUI) ----------------- */
+refreshEventsUI();
+
 </script>
 </body>
 </html>
