@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create an Event</title>
+
+<style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #c8edff;
+    }
+
+    h2 {
+        text-align: center;
+        margin-top: 20px;
+        font-size: 28px;
+        color: #004f7c;
+    }
+
+    /* PAGE CONTAINER */
+    .page {
+        width: 80%;
+        margin: 20px auto;
+        padding: 30px;
+        background: #e8f6ff;
+        border-radius: 15px;
+    }
+
+    /* LISTING OPTIONS */
+    .listing-boxes {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        margin-top: 20px;
+    }
+
+    .box {
+        flex: 1;
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        border: 2px solid #dfeaf2;
+        cursor: pointer;
+        text-align: center;
+        transition: 0.2s;
+    }
+
+    .box:hover {
+        transform: scale(1.05);
+    }
+
+    .selected {
+        border-color: #005bbb;
+        box-shadow: 0 0 10px rgba(0, 91, 187, 0.2);
+    }
+
+    /* BUTTON */
+    .btn {
+        width: 200px;
+        margin: 30px auto;
+        display: block;
+        padding: 12px;
+        border: none;
+        background: #005bbb;
+        color: white;
+        font-size: 17px;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+
+    /* PAYMENT PAGE */
+    .hidden {
+        display: none;
+    }
+
+    .payment-container {
+        display: flex;
+        gap: 20px;
+    }
+
+    /* SUMMARY SECTION */
+    .summary {
+        width: 40%;
+        background: #d0e7ff;
+        padding: 20px;
+        border-radius: 12px;
+    }
+
+    /* PAYMENT FORM */
+    .pay-box {
+        width: 60%;
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+    }
+
+    input {
+        width: 100%;
+        padding: 10px;
+        margin-top: 10px;
+        border-radius: 6px;
+        border: 1px solid #bcd3df;
+    }
+
+    .pay-method {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .pm {
+        flex: 1;
+        padding: 12px;
+        border: 2px solid #dfeaf2;
+        border-radius: 7px;
+        text-align: center;
+        cursor: pointer;
+    }
+
+    .pm img {
+        height: 40px;
+        display: block;
+        margin: 0 auto 5px;
+    }
+
+    .pm-active {
+        border-color: #005bbb;
+        background: #e5f2ff;
+    }
+
+    /* SUCCESS POPUP */
+    .popup {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0,0,0,0.4);
+        display: none;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .popup-box {
+        width: 450px;
+        background: white;
+        padding: 25px;
+        border-radius: 12px;
+        text-align: left;
+    }
+
+    .popup-box h3 {
+        text-align: center;
+    }
+</style>
+</head>
+
+<body>
+
+<h2>Create an Event</h2>
+
+<!-- ========================= LISTING PAGE ========================= -->
+<div id="listingPage" class="page">
+
+    <h3>Listing Type</h3>
+
+    <div class="listing-boxes">
+        <div class="box" onclick="selectListing('Basic', 200, 'Listed for 7 days')">
+            <h2>₱200</h2>
+            <p>7 days</p>
+            <p>Your event will be listed in general section.</p>
+        </div>
+
+        <div class="box" onclick="selectListing('Featured', 800, 'Shown for 30 days on homepage')">
+            <h2>₱800</h2>
+            <p>30 days</p>
+            <p>Maximum visibility on homepage.</p>
+        </div>
+
+        <div class="box" onclick="selectListing('Premium', 500, 'Visible for 14 days')">
+            <h2>₱500</h2>
+            <p>14 days</p>
+            <p>Higher placement + social media exposure.</p>
+        </div>
+
+        <div class="box" onclick="selectListing('Custom', 30, 'Charged per day')">
+            <h2>₱30</h2>
+            <p>per day</p>
+            <p>Choose how many days event stays visible.</p>
+        </div>
+    </div>
+
+    <button class="btn" onclick="goPayment()">Create Event</button>
+
+</div>
+
+<!-- ========================= PAYMENT PAGE ========================= -->
+<div id="paymentPage" class="page hidden">
+
+    <h3>Create an Event</h3>
+
+    <div class="payment-container">
+
+        <!-- SUMMARY -->
+        <div class="summary">
+            <h4>Payment Summary</h4>
+            <p><b>Event Title:</b> Fearless</p>
+            <p><b>Category:</b> Concert, Entertainment</p>
+            <p><b>Location:</b> Phase 1, Basketball Court</p>
+            <p><b>Event Date:</b> May 22, 2025 - 2PM to 10PM</p>
+
+            <hr>
+
+            <p><b>Listing Type:</b> <span id="sumType"></span></p>
+            <p><b>Amount:</b> ₱<span id="sumAmount"></span></p>
+        </div>
+
+        <!-- PAYMENT BOX -->
+        <div class="pay-box">
+            <h4>Payment Method</h4>
+
+            <div class="pay-method">
+                <div class="pm" id="gcash" onclick="pickMethod('GCash')">
+                    <img src="data:image/jpeg;base64,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" alt="GCash">
+                    <div>GCash</div>
+                </div>
+                <div class="pm" id="maya" onclick="pickMethod('Maya')">
+                    <img src="data:image/png;base64,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" alt="Maya">
+                    <div>Maya</div>
+                </div>
+            </div>
+
+            <input type="text" id="owner" placeholder="GCash/Maya Owner Name">
+            <input type="text" id="contact" placeholder="Contact Number">
+            <input type="text" id="note" placeholder="Note (Optional)">
+
+            <button class="btn" onclick="finishEvent()">Proceed Payment</button>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ========================= SUCCESS POPUP ========================= -->
+<div id="popup" class="popup">
+    <div class="popup-box">
+        <h3>Event Created Successfully!</h3>
+
+        <p><b>Event Name:</b> Fearless</p>
+        <p><b>Event ID:</b> EVT-20250522-2741</p>
+        <p><b>Category:</b> Concert, Entertainment</p>
+        <p><b>Date & Time:</b> May 22, 2025</p>
+        <p><b>Location:</b> Phase 1, Basketball Court</p>
+
+        <p><b>Listing Type:</b> <span id="popType"></span></p>
+        <p><b>Amount Paid:</b> ₱<span id="popAmount"></span></p>
+
+        <button class="btn" onclick="closePopup()">Done</button>
+    </div>
+</div>
+
+<script>
+    let selectedType = "";
+    let selectedAmount = "";
+    let selectedDesc = "";
+    let method = "";
+
+    function selectListing(type, amount, desc) {
+        selectedType = type;
+        selectedAmount = amount;
+        selectedDesc = desc;
+
+        document.querySelectorAll('.box').forEach(b => b.classList.remove('selected'));
+        event.currentTarget.classList.add('selected');
+    }
+
+    function goPayment() {
+        if (!selectedType)
+            return alert("Please select a listing type first!");
+
+        document.getElementById("listingPage").classList.add("hidden");
+        document.getElementById("paymentPage").classList.remove("hidden");
+
+        document.getElementById("sumType").innerText = selectedType + " (" + selectedDesc + ")";
+        document.getElementById("sumAmount").innerText = selectedAmount;
+    }
+
+    function pickMethod(m) {
+        method = m;
+
+        document.querySelectorAll('.pm').forEach(x => x.classList.remove("pm-active"));
+        event.currentTarget.classList.add("pm-active");
+    }
+
+    function finishEvent() {
+        if (!method)
+            return alert("Please select a payment method!");
+
+        document.getElementById("popup").style.display = "flex";
+
+        document.getElementById("popType").innerText = selectedType + " (" + selectedDesc + ")";
+        document.getElementById("popAmount").innerText = selectedAmount + ".00 via " + method;
+    }
+
+    function closePopup() {
+        document.getElementById("popup").style.display = "none";
+    }
+</script>
+
+</body>
+</html>
