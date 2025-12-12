@@ -3,38 +3,80 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>About Us - Sample</title>
+  <title>About Us - HanapGimik</title>
+
   <style>
     body {
       margin: 0;
       font-family: Arial, sans-serif;
+      background: #ffffff;
       color: #093b73;
     }
+
+    /* NAVIGATION BAR */
+    nav {
+      background: #0C61C9;
+      color: white;
+      padding: 18px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 15px;
+    }
+
+    nav .logo {
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: 1px;
+    }
+
+    nav .center-links,
+    nav .right-links {
+      display: flex;
+      gap: 25px;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    nav a:hover {
+      text-decoration: underline;
+    }
+
+    /* HERO HEADER */
     .hero {
-      background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('hero-image.jpg');
-      background-size: cover;
-      background-position: center;
-      padding: 120px 0;
+      background: #0C61C9;
+      padding: 100px 0;
       text-align: center;
       color: white;
       font-size: 60px;
       font-weight: bold;
     }
+
     section {
       padding: 60px 20px;
       text-align: center;
     }
+
     h2 {
-      font-size: 26px;
-      font-weight: 700;
+      font-size: 30px;
+      font-weight: 800;
       margin-bottom: 10px;
+      letter-spacing: 1px;
     }
+
     p {
-      max-width: 700px;
+      max-width: 800px;
       margin: 0 auto 20px;
-      line-height: 1.6;
+      line-height: 1.7;
+      font-size: 17px;
     }
-    .row {
+
+    /* FLEX */
+    .row, .half-row {
       display: flex;
       justify-content: center;
       align-items: center;
@@ -42,54 +84,142 @@
       gap: 40px;
       margin-top: 40px;
     }
-    .img-box {
-      width: 330px;
-      height: 330px;
-      border-radius: 20px;
-      background: #ccc;
-      overflow: hidden;
+
+    .half-row {
+      justify-content: space-between;
+      max-width: 1200px;
+      margin: auto;
+      gap: 50px;
     }
-    .img-box img {
+
+    .half {
+      flex: 1 1 45%;
+      min-width: 300px;
+    }
+
+    .small-img {
       width: 100%;
-      height: 100%;
+      height: 260px;
+      border-radius: 18px;
       object-fit: cover;
     }
+
+    /* BLUE SECTIONS */
+    .blue-sec {
+      background: #0C61C9;
+      color: white;
+      padding: 80px 20px;
+    }
+
+    /* FOOTER */
     footer {
       background: #072f5f;
       color: white;
-      padding: 40px 20px;
+      padding: 45px 20px;
       display: flex;
       justify-content: space-between;
       flex-wrap: wrap;
       font-size: 14px;
     }
+
     footer div {
       margin-bottom: 20px;
     }
+
   </style>
 </head>
+
 <body>
+
+  <!-- ⭐ NAVBAR (ADDED) -->
+  <nav>
+    <div class="logo">HanapGimik</div>
+
+    <div class="right-links">
+      <a href="Account.html">Home</a>
+      <a href="BookersAccount.html">Dashboard</a>
+      <a href="LoginPage.html">LogOut</a>
+    </div>
+  </nav>
+
   <div class="hero">ABOUT US</div>
 
+  <!-- WHO WE ARE -->
   <section>
     <h2>WHO WE ARE</h2>
     <p>
-      This is a sample About Us layout similar to what you provided. You can
-      replace all text with your own brand story and details.
+      HanapGimik is your ultimate go-to hub for discovering the best events, hangouts, 
+      and happenings around the city. Whether you're looking for weekend gigs, food festivals, 
+      local markets, or underground parties—we’ve got you covered.
+      <br><br>
+      Born from the idea that fun shouldn’t be hard to find, HanapGimik connects event-goers 
+      with event creators through a vibrant, user-friendly platform. No more endless scrolling—just scroll, tap, and go!
     </p>
   </section>
 
-  <section style="background:#0C61C9; color:white;">
-    <h2>OUR STORY</h2>
-    <div class="row">
-      <p>
-        Tell the story of how your group or brand started. Add your experiences,
-        motivations, and how the idea came to life.
-      </p>
-      <div class="img-box"><img src="story.jpg" alt="Our Story" /></div>
+  <!-- OUR MISSION -->
+  <section class="blue-sec">
+    <div class="half-row">
+      <div class="half">
+        <h2>OUR MISSION</h2>
+        <p>
+          To make event discovery and booking easy, exciting, and accessible for everyone
+          who’s always on the lookout for their next gimik.
+        </p>
+      </div>
+
+      <div class="half">
+        <img src="images/i.png" alt="Mission Image" class="small-img">
+      </div>
     </div>
   </section>
 
+  <!-- WHAT MAKES US DIFFERENT -->
+  <section class="blue-sec" style="padding-top:40px;">
+    <div class="half-row" style="flex-direction:row-reverse;">
+      <div class="half">
+        <h2>WHAT MAKES US DIFFERENT?</h2>
+        <p style="text-align:left; max-width:500px; margin:auto;">
+          • Curated and crowd-sourced events for every vibe <br>
+          • A platform that supports local organizers and creative communities <br>
+          • Hassle-free booking and real-time updates <br>
+          • Visually-driven interface—because we love aesthetic posters too!
+        </p>
+      </div>
+
+      <div class="half">
+        <img src="images/j.png" alt="Difference Image" class="small-img">
+      </div>
+    </div>
+  </section>
+
+  <!-- OUR STORY -->
+  <section class="blue-sec" style="padding-top:60px;">
+    <div class="half-row">
+      
+      <div class="half">
+        <h2>OUR STORY</h2>
+        <p style="text-align:left; max-width:500px; margin:auto;">
+          HanapGimik started as a small idea between friends who loved exploring new places,
+          local gigs, food spots, and weekend hangouts.
+          <br><br>
+          We realized many people struggle to find events happening nearby—so we built
+          a platform that connects people to experiences they’ll love.
+          <br><br>
+          From a simple passion project, HanapGimik has grown into a community-driven hub
+          supporting local creators, artists, organizers, and everyone looking for their next
+          unforgettable gimik.
+        </p>
+      </div>
+
+      <div class="half">
+        <img src="images/k.png" alt="Our Story Image" class="small-img">
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FOOTER -->
   <footer>
     <div>
       <strong>Socials:</strong><br>
@@ -104,5 +234,6 @@
       Terms and Policies<br>Privacy and Safety
     </div>
   </footer>
+
 </body>
 </html>

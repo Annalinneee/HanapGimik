@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Us - HanapGimik</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    /* NAVBAR */
+    .navbar {
+      background: #1673c6;
+      padding: 15px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: white;
+    }
+
+    .navbar a {
+      margin: 0 15px;
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .logo {
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    /* HERO SECTION */
+    .hero {
+      background: linear-gradient(135deg, #1d4e89, #56a8ff);
+      height: 220px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .hero h1 {
+      font-size: 55px;
+      color: white;
+      font-weight: 800;
+      text-shadow: 0px 3px 6px rgba(0,0,0,0.3);
+    }
+
+    /* SUBTEXT */
+    .subtitle {
+      background: #c8ecff;
+      padding: 40px 10%;
+      text-align: center;
+      font-size: 18px;
+      color: #333;
+    }
+
+    /* CARDS */
+    .cards {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      padding: 50px 20px;
+      background: #c8ecff;
+      flex-wrap: wrap;
+    }
+
+    .card {
+      width: 300px;
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      text-align: center;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .icon {
+      width: 90px;
+      margin-bottom: 20px;
+    }
+
+    .card h3 {
+      font-size: 17px;
+      color: #1c4b8f;
+      font-weight: 800;
+    }
+
+    .line {
+      width: 60px;
+      height: 3px;
+      background: #1c4b8f;
+      margin: 10px auto 20px auto;
+    }
+
+    .card p {
+      font-size: 15px;
+      margin: 6px 0;
+    }
+
+    .card a {
+      color: #1673c6;
+      text-decoration: none;
+    }
+
+    /* FOOTER */
+    .footer {
+      background: #0a2e4d;
+      padding: 40px 10%;
+      display: flex;
+      justify-content: space-between;
+      color: white;
+      flex-wrap: wrap;
+    }
+
+    .footer-section {
+      margin-bottom: 20px;
+    }
+
+    .footer-section h4 {
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+
+    .footer-section p {
+      margin: 5px 0;
+      font-size: 14px;
+    }
+
+    /* REAL SOCIAL ICONS */
+    .social-icons {
+      display: flex;
+      align-items: center;
+    }
+
+    .social-icon {
+      width: 28px;
+      margin-right: 12px;
+    }
+  </style>
+
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <header class="navbar">
+    <div class="logo">HanapGimik</div>
+
+
+    <nav class="right-nav">
+      <a href="index.html">Home</a>
+      <a href="Account.html">Dashboard</a>
+      <a href="LoginPage.html">LogOut</a>
+    </nav>
+  </header>
+
+  <!-- HERO SECTION -->
+  <section class="hero">
+    <h1>CONTACT US</h1>
+  </section>
+
+  <!-- SUBTEXT -->
+  <p class="subtitle">
+    Got questions, feedback, or event collab ideas? We’d love to hear from you!
+    Whether you’re an event-goer looking for more info or an organizer who wants to be featured,
+    HanapGimik is here to help.
+  </p>
+
+  <!-- CONTACT CARDS -->
+  <section class="cards">
+
+    <div class="card">
+      <img src="https://cdn-icons-png.flaticon.com/512/561/561127.png" class="icon">
+      <h3>GENERAL INQUIRIES</h3>
+      <div class="line"></div>
+      <p>Email: <a href="#">hanapgimik@gmail.com</a></p>
+    </div>
+
+    <div class="card">
+      <img src="https://cdn-icons-png.flaticon.com/512/599/599502.png" class="icon">
+      <h3>PARTNERSHIPS & COLLABORATIONS</h3>
+      <div class="line"></div>
+      <p>
+        We’re open to working with local businesses, artists, and student orgs.
+        Let’s make every gimik unforgettable—together.
+      </p>
+    </div>
+
+    <div class="card">
+      <img src="https://cdn-icons-png.flaticon.com/512/1384/1384023.png" class="icon">
+      <h3>SOCIAL MEDIA</h3>
+      <div class="line"></div>
+      <p>Facebook: <a href="#">facebook.com/hanapgimik</a></p>
+      <p>Instagram: <a href="#">@hanapgimik</a></p>
+      <p>Messenger: <a href="#">m.me/hanapgimik</a></p>
+    </div>
+
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+
+    <div class="footer-section">
+      <h4>Socials:</h4>
+
+      <div class="social-icons">
+        <img src="https://cdn-icons-png.flaticon.com/512/124/124010.png" alt="Facebook" class="social-icon">
+        <img src="https://cdn-icons-png.flaticon.com/512/733/733579.png" alt="Twitter" class="social-icon">
+        <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="Instagram" class="social-icon">
+      </div>
+    </div>
+
+    <div class="footer-section">
+      <h4>Company:</h4>
+      <p>About Us</p>
+      <p>Contact Us</p>
+      <p>Career</p>
+    </div>
+
+    <div class="footer-section">
+      <h4>Further Information:</h4>
+      <p>Terms and Policies</p>
+      <p>Privacy and Safety</p>
+    </div>
+
+  </footer>
+
+</body>
+</html>
